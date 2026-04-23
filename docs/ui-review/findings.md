@@ -13,7 +13,7 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 ## Dashboard (`/`)
 
-- [ ] **P1 [copy]** Page `<title>` is literally `Create Next App` — default Next.js scaffolding metadata never got replaced. Bookmarks, tab text, SEO all wrong. Fix in `app/layout.tsx` (or `app/page.tsx` export const metadata). Screenshot: `01-dashboard.png` (browser tab), same on every page.
+- [x] **P1 [copy]** Page `<title>` is literally `Create Next App` — default Next.js scaffolding metadata never got replaced. Bookmarks, tab text, SEO all wrong. Fix in `app/layout.tsx` (or `app/page.tsx` export const metadata). Screenshot: `01-dashboard.png` (browser tab), same on every page.
 
 - [ ] **P1 [visual]** Topic-mastery progress bars are barely visible — they render as a hairline track (~2 px tall) and the fill is almost invisible at low percentages. The "3 %" / "4 %" fill on Hygiena / Komunikace is a 2-pixel dot. Bars should be at least 6–8 px tall and have a clear track colour. Screenshot: `06-dashboard-return.png`.
 

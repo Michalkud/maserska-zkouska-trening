@@ -106,7 +106,7 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Write `docs/ui-review/findings.md` as a checklist: every visual / UX issue you spot, one bullet each, categorized (visual / a11y / copy / interaction / performance). Include screenshot refs.
   - Commit: `test: UI sweep 2026-04-23 — N findings`.
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - Open `docs/ui-review/findings.md`. Find the first unresolved `- [ ]` finding. Fix it. Mark it `[x]`.
   - If it's a visual/design issue, iterate: take a screenshot, compare, refine.
   - Commit: `<type>: <finding summary>` where `<type>` is `fix`, `feat`, or `style` as appropriate.
