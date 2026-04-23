@@ -59,7 +59,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Run `pnpm prisma:seed` (or equivalent) and verify the rows exist.
   - Commit: `feat: seed domain 1 — client communication`.
 
-- [ ] **Seed Domain 3 — Health & Hygiene Compliance**
+- [x] **Seed Domain 3 — Health & Hygiene Compliance**
   - Add topic(s) (e.g. `hygiena-a-dezinfekce`, `provozni-standardy`) to `prisma/seed.ts`.
   - Write ~20 MC + ~5 open questions covering sub-topics 3.1–3.5 (facility sanitation, equipment disinfection, PPE, epidemiologically significant activity compliance, occupational health).
   - Cite NSK 69-037-M § Doména 3, Vyhláška 306/2012, Zákon 258/2000 Sb. in `sourceRef`.
