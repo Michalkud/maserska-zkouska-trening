@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
 import { pickNextQuestion, type SelectorQuestion } from "@/lib/selector";
 import { QuizForm } from "./quiz-form";
@@ -42,26 +43,42 @@ export default async function QuizPage({
 
   if (!picked) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
+      <main className="mx-auto max-w-xl px-6 py-16">
         {scopedTopic && (
           <div className="mb-3 text-sm font-medium text-muted-foreground">
             {scopedTopic.nameCs}
           </div>
         )}
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Žádné otázky k opakování
-        </h1>
-        <p className="mt-3 text-muted-foreground">
+        <h1 className="text-2xl font-semibold tracking-tight text-balance">
           {scopedTopic
-            ? "V tomto okruhu nejsou aktuálně otázky k opakování. Zkus jiný okruh nebo se vrať později."
-            : "Všechny otázky jsou aktuálně mimo termín opakování. Vrať se později."}
+            ? "V tomto okruhu je teď klid"
+            : "Dnes už máš všechno projeté"}
+        </h1>
+        <p className="mt-3 max-w-prose leading-relaxed text-muted-foreground">
+          {scopedTopic
+            ? "Otázky z tohoto okruhu čekají, až jim vyprší termín opakování. Zkus jiný okruh nebo si projdi chybovník."
+            : "Všechny otázky jsou zatím mimo termín opakování. Vrať se později, nebo si mezitím projdi chybovník."}
         </p>
-        <Link
-          href="/"
-          className="mt-6 inline-block text-sm font-medium underline underline-offset-4"
-        >
-          ← Zpět na přehled
-        </Link>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/" className={buttonVariants({ size: "lg" })}>
+            Zpět na přehled
+          </Link>
+          {scopedTopic ? (
+            <Link
+              href="/quiz"
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
+              Trénink napříč okruhy
+            </Link>
+          ) : (
+            <Link
+              href="/review"
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
+              Chybovník
+            </Link>
+          )}
+        </div>
       </main>
     );
   }

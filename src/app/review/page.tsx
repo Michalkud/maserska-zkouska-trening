@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -55,8 +56,9 @@ export default async function ReviewPage() {
             Chybovník
           </h1>
           <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
-            Posledních {LIMIT} otázek, které jsi zodpověděl špatně. Projdi si
-            správné odpovědi a vysvětlení.
+            {items.length === 0
+              ? "Tady se ti budou skládat otázky, na kterých jsi zaváhal."
+              : "Otázky, na kterých jsi naposledy zakopl. Projdi si správné odpovědi a vysvětlení."}
           </p>
         </div>
         <Link
@@ -68,9 +70,20 @@ export default async function ReviewPage() {
       </div>
 
       {items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Zatím žádné chyby k procvičení. Až něco zkazíš, najdeš to tady.
-        </p>
+        <div className="rounded-xl border border-dashed bg-card/50 px-6 py-10 text-center">
+          <p className="text-base font-medium tracking-tight">
+            Zatím bez chyb
+          </p>
+          <p className="mx-auto mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
+            Ještě jsi nic nezkazil. Až něco pustíš vedle, najdeš to přesně tady — se správnou odpovědí i vysvětlením.
+          </p>
+          <Link
+            href="/quiz"
+            className={`${buttonVariants({ size: "lg" })} mt-6`}
+          >
+            Spustit trénink
+          </Link>
+        </div>
       ) : (
         <ol className="space-y-4">
           {items.map((m) => {

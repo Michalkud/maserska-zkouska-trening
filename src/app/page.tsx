@@ -104,20 +104,34 @@ export default async function DashboardPage() {
             href="/quiz"
             className={buttonVariants({ size: "lg" })}
           >
-            {totalDue > 0 ? "Spustit trénink" : "Zkusit otázku"}
+            {totalDue > 0 ? "Spustit trénink" : "Zkusit otázku navíc"}
           </Link>
         </div>
       </header>
 
       <section className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-4">
-        <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 sm:col-span-2">
-          <div className="text-xs font-medium uppercase tracking-wide text-primary">
-            K opakování dnes
+        {totalDue > 0 ? (
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 sm:col-span-2">
+            <div className="text-xs font-medium uppercase tracking-wide text-primary">
+              K opakování dnes
+            </div>
+            <div className="mt-2 text-5xl font-semibold tabular-nums text-primary">
+              {totalDue}
+            </div>
           </div>
-          <div className="mt-2 text-5xl font-semibold tabular-nums text-primary">
-            {totalDue}
+        ) : (
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 sm:col-span-2">
+            <div className="text-xs font-medium uppercase tracking-wide text-primary">
+              Dnes splněno
+            </div>
+            <p className="mt-2 max-w-prose text-lg font-medium leading-snug tracking-tight text-balance">
+              Máš všechno z dneška za sebou.
+            </p>
+            <p className="mt-1.5 max-w-prose text-sm leading-relaxed text-muted-foreground">
+              Další otázky se vrátí, až jim vyprší termín opakování. Můžeš si zkusit i něco navíc.
+            </p>
           </div>
-        </div>
+        )}
         <div className="rounded-lg border bg-card p-5">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Série
