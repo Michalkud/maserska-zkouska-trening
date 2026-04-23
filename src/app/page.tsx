@@ -152,38 +152,43 @@ export default async function DashboardPage() {
         ) : (
           <ul className="space-y-2">
             {topicRows.map((t) => (
-              <li key={t.id} className="rounded-lg border bg-card px-4 py-3">
-                <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-base font-medium tracking-tight">
-                    {t.nameCs}
-                  </span>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {t.seen}/{t.total} · {Math.round(t.masteryPct)}%
-                  </span>
-                </div>
-                <div className="mt-2.5 flex items-center gap-3">
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-primary/10">
-                    <div
-                      className="h-full rounded-full bg-primary transition-[width] duration-500"
-                      style={{ width: `${t.masteryPct}%` }}
+              <li key={t.id}>
+                <Link
+                  href={`/quiz?topic=${t.id}`}
+                  className="block rounded-lg border bg-card px-4 py-3 transition-colors hover:border-primary/40 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                >
+                  <div className="flex items-baseline justify-between gap-4">
+                    <span className="text-base font-medium tracking-tight">
+                      {t.nameCs}
+                    </span>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {t.seen}/{t.total} · {Math.round(t.masteryPct)}%
+                    </span>
+                  </div>
+                  <div className="mt-2.5 flex items-center gap-3">
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-primary/10">
+                      <div
+                        className="h-full rounded-full bg-primary transition-[width] duration-500"
+                        style={{ width: `${t.masteryPct}%` }}
+                      />
+                    </div>
+                    <MasterySparkline
+                      values={
+                        t.history ??
+                        (Array.from({ length: HISTORY_DAYS }, () => null) as (
+                          | number
+                          | null
+                        )[])
+                      }
+                      ariaLabel={`Průměrná známka ${t.nameCs} za posledních ${HISTORY_DAYS} dní`}
                     />
                   </div>
-                  <MasterySparkline
-                    values={
-                      t.history ??
-                      (Array.from({ length: HISTORY_DAYS }, () => null) as (
-                        | number
-                        | null
-                      )[])
-                    }
-                    ariaLabel={`Průměrná známka ${t.nameCs} za posledních ${HISTORY_DAYS} dní`}
-                  />
-                </div>
-                {t.due > 0 && (
-                  <div className="mt-1.5 text-xs text-muted-foreground">
-                    {t.due} k opakování
-                  </div>
-                )}
+                  {t.due > 0 && (
+                    <div className="mt-1.5 text-xs text-muted-foreground">
+                      {t.due} k opakování
+                    </div>
+                  )}
+                </Link>
               </li>
             ))}
           </ul>

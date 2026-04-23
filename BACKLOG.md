@@ -158,7 +158,8 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
 - [x] **Post-MVP: fix top unresolved UI finding**
   - Done: dashboard stat hierarchy — "K opakování dnes" now dominates (col-span-2, primary-tinted card, text-5xl primary number); "Otázek v databázi" demoted to muted card with smaller text-2xl font-medium muted number; "Série" left unchanged as the middle-priority metric. Screenshot in `docs/ui-review/stat-hierarchy-2026-04-23/dashboard-after.png`.
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
+  - Done: topic rows on dashboard are now clickable — each `<li>` in `src/app/page.tsx` wraps its content in `<Link href={\`/quiz?topic=${t.id}\`}>` with hover/focus affordance. Quiz page in `src/app/quiz/page.tsx` reads `searchParams.topic`, filters questions by that topicId, and shows an "okruh" pill next to the topic name. Scope-aware empty state. Verified via Playwright: click "Hygiena a dezinfekce" → `/quiz?topic=…` → hygiene question with scope pill rendered. tsc + eslint clean. Screenshots: `docs/ui-review/topic-click-scope-2026-04-23/`.
 
 - [ ] **Post-MVP: regenerate improvement batch**
   - Run `/rebuild-backlog` to generate the next batch of 10–15 post-MVP items based on the current state of the app, `docs/ui-review/findings.md`, and open questions logged in SecondBrain.

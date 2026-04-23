@@ -5,8 +5,21 @@ import { QuizForm } from "./quiz-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function QuizPage() {
+export default async function QuizPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ topic?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const topicParam = Array.isArray(params.topic) ? params.topic[0] : params.topic;
+
+  const scopedTopic = topicParam
+    ? await prisma.topic.findUnique({ where: { id: topicParam } })
+    : null;
+  const scopeId = scopedTopic?.id ?? null;
+
   const questions = await prisma.question.findMany({
+    where: scopeId ? { topicId: scopeId } : undefined,
     include: { topic: true, mastery: true },
   });
 
@@ -24,11 +37,18 @@ export default async function QuizPage() {
   if (!picked) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
+        {scopedTopic && (
+          <div className="mb-3 text-sm font-medium text-muted-foreground">
+            {scopedTopic.nameCs}
+          </div>
+        )}
         <h1 className="text-2xl font-semibold tracking-tight">
           Žádné otázky k opakování
         </h1>
         <p className="mt-3 text-muted-foreground">
-          Všechny otázky jsou aktuálně mimo termín opakování. Vrať se později.
+          {scopedTopic
+            ? "V tomto okruhu nejsou aktuálně otázky k opakování. Zkus jiný okruh nebo se vrať později."
+            : "Všechny otázky jsou aktuálně mimo termín opakování. Vrať se později."}
         </p>
         <Link
           href="/"
@@ -48,7 +68,14 @@ export default async function QuizPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
       <div className="mb-8 flex items-center justify-between text-sm text-muted-foreground">
-        <span className="font-medium">{full.topic.nameCs}</span>
+        <span className="font-medium">
+          {full.topic.nameCs}
+          {scopedTopic && (
+            <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+              okruh
+            </span>
+          )}
+        </span>
         <Link
           href="/"
           className="underline underline-offset-4 hover:text-foreground"
