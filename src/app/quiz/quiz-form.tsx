@@ -238,16 +238,6 @@ export function QuizForm({
             {graded.correct ? "✓ Správně" : "✗ Špatně"}
           </div>
           <div className="space-y-4 rounded-lg border bg-muted/40 p-5">
-            {kind === "mc" && !graded.correct && (
-              <div>
-                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Správná odpověď
-                </div>
-                <p className="mt-1.5 max-w-prose text-sm leading-relaxed">
-                  {correctAnswer}
-                </p>
-              </div>
-            )}
             <div>
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Vysvětlení
