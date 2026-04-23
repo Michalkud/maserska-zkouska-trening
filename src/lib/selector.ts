@@ -10,6 +10,9 @@ export type SelectorOptions = {
   random?: () => number;
 };
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const REFERENCE_EASE = 2.5;
+
 export function scoreQuestion(
   q: SelectorQuestion,
   now: Date = new Date(),
@@ -18,11 +21,11 @@ export function scoreQuestion(
 
   const daysOverdue = Math.max(
     0,
-    (now.getTime() - q.mastery.dueAt.getTime()) / (24 * 60 * 60 * 1000),
+    (now.getTime() - q.mastery.dueAt.getTime()) / DAY_MS,
   );
   if (daysOverdue === 0) return 0;
 
-  const easeFactor = 1 / Math.max(q.mastery.ease, 0.01);
+  const easeFactor = REFERENCE_EASE / q.mastery.ease;
   return easeFactor * daysOverdue * q.topicWeight;
 }
 

@@ -134,9 +134,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `fix: SM-2 tuning + unit tests`.
   - Done: canonical-spec deviation found — on q<3, the spec says "start repetitions from the beginning without changing the E-Factor", but the code was applying the ease delta anyway. Fixed: ease is now preserved on failure (grade<3) and only updated on passing grades. Grade-to-ease formula, MIN_EASE=1.3 floor, and interval progression (I(1)=1, I(2)=6, I(n)=I(n-1)×EF) all match spec. Tests restructured by scenario with dedicated cases for each grade 0–5 (19 tests total, all passing).
 
-- [ ] **Post-MVP: logic refinement — selector weighting**
+- [x] **Post-MVP: logic refinement — selector weighting**
   - Review `lib/selector.ts`. Verify weighted pick formula against the spec: `(1 / (mastery.ease / 2.5)) × max(0, daysOverdue) × topic.weight` with unseen-first fallback. Add tie-breaking (randomness to avoid streaks on the same question). Add unit tests.
   - Commit: `fix: selector weighting + unit tests`.
+  - Done: ease factor was `1/ease` — fixed to `2.5/ease` so a default-ease card scores 1.0× (matches spec `1/(ease/2.5)`). Dropped the `Math.max(ease, 0.01)` clamp since SM-2's MIN_EASE=1.3 floor already guarantees ease > 0. Extracted `DAY_MS` and `REFERENCE_EASE` constants. Tie-breaking already present (random pick among scores within 0.1% of max); validated by new tests that inject a deterministic `random()` and confirm the distribution spreads across tied candidates (≥35% each over 1000 trials). 15 selector tests covering: unseen-first fallback, empty/no-overdue returning null, linear scaling in daysOverdue and topicWeight, ease-difficulty preference, exact-dueAt → score 0, and deterministic + stochastic tie-breaking. All 34 tests pass, tsc clean.
 
 - [ ] **Post-MVP: add keyboard shortcuts**
   - Quiz page: `1`–`4` selects MC option; `Enter` submits; `N` goes to next question after seeing explanation; `Esc` returns to dashboard.
