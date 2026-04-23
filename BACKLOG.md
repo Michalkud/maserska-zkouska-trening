@@ -40,7 +40,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Unit tests for sm2.ts.
   - Commit: `feat: SM-2 scoring + adaptive selection`.
 
-- [ ] **Quiz UI — next-question selection + answer flow**
+- [x] **Quiz UI — next-question selection + answer flow**
   - `app/quiz/page.tsx` picks one due question (see `lib/selector.ts`).
   - Multiple-choice renders as radio list; open-answer renders as textarea.
   - Submit → server action in `app/attempt/route.ts` → grade, insert Attempt, update MasteryScore via `lib/sm2.ts`.
