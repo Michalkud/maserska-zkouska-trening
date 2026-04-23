@@ -24,7 +24,6 @@ function dayLabel(n: number): string {
 export default async function DashboardPage() {
   const [topics, attempts] = await Promise.all([
     prisma.topic.findMany({
-      orderBy: { nameCs: "asc" },
       include: {
         questions: { include: { mastery: true } },
       },
@@ -38,26 +37,32 @@ export default async function DashboardPage() {
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
 
-  const topicRows = topics.map((t) => {
-    const total = t.questions.length;
-    const seen = t.questions.filter((q) => q.mastery).length;
-    const masterySum = t.questions.reduce(
-      (acc, q) => acc + (q.mastery ? normalizeEase(q.mastery.ease) : 0),
-      0,
-    );
-    const masteryPct = total > 0 ? (masterySum / total) * 100 : 0;
-    const due = t.questions.filter(
-      (q) => !q.mastery || q.mastery.dueAt <= endOfToday,
-    ).length;
-    return {
-      id: t.id,
-      nameCs: t.nameCs,
-      total,
-      seen,
-      masteryPct,
-      due,
-    };
-  });
+  const topicRows = topics
+    .map((t) => {
+      const total = t.questions.length;
+      const seen = t.questions.filter((q) => q.mastery).length;
+      const masterySum = t.questions.reduce(
+        (acc, q) => acc + (q.mastery ? normalizeEase(q.mastery.ease) : 0),
+        0,
+      );
+      const masteryPct = total > 0 ? (masterySum / total) * 100 : 0;
+      const due = t.questions.filter(
+        (q) => !q.mastery || q.mastery.dueAt <= endOfToday,
+      ).length;
+      return {
+        id: t.id,
+        nameCs: t.nameCs,
+        total,
+        seen,
+        masteryPct,
+        due,
+      };
+    })
+    .sort((a, b) => {
+      if (b.due !== a.due) return b.due - a.due;
+      if (a.masteryPct !== b.masteryPct) return a.masteryPct - b.masteryPct;
+      return a.nameCs.localeCompare(b.nameCs, "cs");
+    });
 
   const totalDue = topicRows.reduce((s, t) => s + t.due, 0);
   const totalQuestions = topicRows.reduce((s, t) => s + t.total, 0);

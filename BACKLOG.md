@@ -115,7 +115,7 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
 - [x] **Post-MVP: fix top unresolved UI finding**
   - (Same as above. Loop repeats this item per iteration until findings.md is clear.)
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - (Same as above.)
 
 - [ ] **Post-MVP: design polish — typography + spacing pass**

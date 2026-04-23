@@ -17,7 +17,7 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 - [x] **P1 [visual]** Topic-mastery progress bars are barely visible — they render as a hairline track (~2 px tall) and the fill is almost invisible at low percentages. The "3 %" / "4 %" fill on Hygiena / Komunikace is a 2-pixel dot. Bars should be at least 6–8 px tall and have a clear track colour. Screenshot: `06-dashboard-return.png`. → Fixed: bumped to `h-2.5` (10 px), tinted track `bg-primary/10`, filled `bg-primary rounded-full`. Verified in `fix-01-progress-bars.png`.
 
-- [ ] **P2 [info-arch]** Topics are listed alphabetically by Czech title. A learner cares first about *weakest* topics or *most due today*. Sort descending by (due count desc, mastery asc) or add sort controls. Screenshot: `01-dashboard.png`.
+- [x] **P2 [info-arch]** Topics are listed alphabetically by Czech title. A learner cares first about *weakest* topics or *most due today*. Sort descending by (due count desc, mastery asc) or add sort controls. Screenshot: `01-dashboard.png`. → Fixed in `src/app/page.tsx`: sort `topicRows` by `due desc`, then `masteryPct asc`, then Czech-locale name. Verified in `fix-02-topic-sort.png` — "První pomoc" (19 due) at top, "Masáž hlavy a krku" (4 due) at bottom.
 
 - [ ] **P2 [visual]** Three top stats (`K opakování dnes`, `Série`, `Otázek v databázi`) are given equal visual weight, but the primary action hint is "what should I study now?". "K opakování dnes" should be emphasised (larger number, primary colour) and "Otázek v databázi" demoted — it's vanity metric. Screenshot: `01-dashboard.png`.
 
