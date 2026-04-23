@@ -139,10 +139,11 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `fix: selector weighting + unit tests`.
   - Done: ease factor was `1/ease` — fixed to `2.5/ease` so a default-ease card scores 1.0× (matches spec `1/(ease/2.5)`). Dropped the `Math.max(ease, 0.01)` clamp since SM-2's MIN_EASE=1.3 floor already guarantees ease > 0. Extracted `DAY_MS` and `REFERENCE_EASE` constants. Tie-breaking already present (random pick among scores within 0.1% of max); validated by new tests that inject a deterministic `random()` and confirm the distribution spreads across tied candidates (≥35% each over 1000 trials). 15 selector tests covering: unseen-first fallback, empty/no-overdue returning null, linear scaling in daysOverdue and topicWeight, ease-difficulty preference, exact-dueAt → score 0, and deterministic + stochastic tie-breaking. All 34 tests pass, tsc clean.
 
-- [ ] **Post-MVP: add keyboard shortcuts**
+- [x] **Post-MVP: add keyboard shortcuts**
   - Quiz page: `1`–`4` selects MC option; `Enter` submits; `N` goes to next question after seeing explanation; `Esc` returns to dashboard.
   - Show the bindings in a subtle footer.
   - Commit: `feat: quiz keyboard shortcuts`.
+  - Done: window-level `keydown` listener in `quiz-form.tsx` — digit keys set the matching choice; `Enter` submits MC (skipped if focus is in an editable field); when graded, `N`/`Enter` advance to next question; `Esc` pushes `/`. Modifier keys (meta/ctrl/alt) are ignored. Subtle `ShortcutHints` footer renders `<kbd>` chips contextual to state (1–4/Enter pre-submit → N/Enter post-grade; Esc always). Verified via Playwright: pressed 2 (selected), Enter (graded ✓ Správně), N (advanced to next question on new topic), Esc (returned to dashboard). `tsc --noEmit` and `eslint` clean.
 
 - [ ] **Post-MVP: add mastery history sparkline per topic**
   - Dashboard: next to each topic mastery bar, render a 30-day sparkline of daily average grade (Recharts or plain SVG). Aggregate from the Attempt table in a server action.
