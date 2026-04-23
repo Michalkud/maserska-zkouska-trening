@@ -66,7 +66,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Run seed and verify.
   - Commit: `feat: seed domain 3 — hygiene & compliance`.
 
-- [ ] **Seed Domain 4 — Massage Performance (Reconditioning & Sports)**
+- [x] **Seed Domain 4 — Massage Performance (Reconditioning & Sports)**
   - Add topic(s) (e.g. `masazni-techniky`, `masaz-hornich-koncetin`, `masaz-dolnich-koncetin`, `masaz-trupu-a-zad`, `masaz-hlavy-a-krku`) to `prisma/seed.ts`.
   - Write ~25 MC + ~5 open questions covering sub-topics 4.1–4.8 (upper/lower extremity, trunk, neck/head, techniques/modalities, sequence, special populations, client feedback).
   - Cite NSK 69-037-M § Doména 4 in `sourceRef`.
