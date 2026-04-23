@@ -23,7 +23,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - `pnpm dev` must boot cleanly.
   - Commit: `feat: scaffold Next.js + Prisma + Tailwind`.
 
-- [ ] **Prisma schema: Topic, Question, Attempt, MasteryScore**
+- [x] **Prisma schema: Topic, Question, Attempt, MasteryScore**
   - Match the data model in `~/SecondBrain/wiki/projects/maserska-zkouska-architecture.md`.
   - `prisma migrate dev --name init` applies it.
   - Commit: `feat: initial Prisma schema`.

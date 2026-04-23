@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,5 +5,50 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+}
+
+model Topic {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  nameCs    String
+  weight    Float      @default(1.0)
+  questions Question[]
+}
+
+model Question {
+  id            String        @id @default(cuid())
+  topicId       String
+  topic         Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  kind          String
+  stemCs        String
+  choices       String?
+  correctAnswer String
+  explanationCs String
+  sourceRef     String
+  attempts      Attempt[]
+  mastery       MasteryScore?
+
+  @@index([topicId])
+}
+
+model Attempt {
+  id             String   @id @default(cuid())
+  questionId     String
+  question       Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answeredAt     DateTime @default(now())
+  correct        Boolean
+  responseTimeMs Int
+  grade          Int
+
+  @@index([questionId])
+}
+
+model MasteryScore {
+  id          String   @id @default(cuid())
+  questionId  String   @unique
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  ease        Float    @default(2.5)
+  interval    Int      @default(0)
+  repetitions Int      @default(0)
+  dueAt       DateTime @default(now())
 }
