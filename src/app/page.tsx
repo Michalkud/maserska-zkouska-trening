@@ -109,12 +109,12 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <section className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="rounded-lg border bg-card p-5">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      <section className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-4">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 sm:col-span-2">
+          <div className="text-xs font-medium uppercase tracking-wide text-primary">
             K opakování dnes
           </div>
-          <div className="mt-2 text-3xl font-semibold tabular-nums">
+          <div className="mt-2 text-5xl font-semibold tabular-nums text-primary">
             {totalDue}
           </div>
         </div>
@@ -131,11 +131,11 @@ export default async function DashboardPage() {
             </span>
           </div>
         </div>
-        <div className="rounded-lg border bg-card p-5">
+        <div className="rounded-lg border bg-muted/30 p-5">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Otázek v databázi
           </div>
-          <div className="mt-2 text-3xl font-semibold tabular-nums">
+          <div className="mt-2 text-2xl font-medium tabular-nums text-muted-foreground">
             {totalQuestions}
           </div>
         </div>

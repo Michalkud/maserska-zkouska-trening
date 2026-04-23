@@ -155,7 +155,8 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `feat: mistake review page`.
   - Done: `src/app/review/page.tsx` queries `Attempt` with `correct=false` ordered by `answeredAt desc`, dedupes by `questionId` keeping the latest miss per question, caps at 20. Each entry shows topic name, timestamp (time-of-day when same-day, `d. m.` otherwise), stem, correct answer (green-bordered card), and explanation. Dashboard header now has a "Chybovník" outline button next to the primary CTA. Verified: HTTP 200 at `/review` with real miss data rendered; tsc and eslint clean.
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
+  - Done: dashboard stat hierarchy — "K opakování dnes" now dominates (col-span-2, primary-tinted card, text-5xl primary number); "Otázek v databázi" demoted to muted card with smaller text-2xl font-medium muted number; "Série" left unchanged as the middle-priority metric. Screenshot in `docs/ui-review/stat-hierarchy-2026-04-23/dashboard-after.png`.
 
 - [ ] **Post-MVP: fix top unresolved UI finding**
 
