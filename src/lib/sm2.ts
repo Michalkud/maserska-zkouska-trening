@@ -22,17 +22,17 @@ export function review(
     throw new Error(`grade must be an integer 0–5, got ${grade}`);
   }
 
-  const easeDelta = 0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02);
-  const nextEase = Math.max(MIN_EASE, state.ease + easeDelta);
-
   if (grade < 3) {
     return {
-      ease: nextEase,
+      ease: state.ease,
       interval: 1,
       repetitions: 0,
       dueAt: new Date(now.getTime() + DAY_MS),
     };
   }
+
+  const easeDelta = 0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02);
+  const nextEase = Math.max(MIN_EASE, state.ease + easeDelta);
 
   const nextReps = state.repetitions + 1;
   let nextInterval: number;

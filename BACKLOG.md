@@ -129,9 +129,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `style: a11y contrast pass`.
   - Done: light-mode `--muted-foreground` 0.556 → 0.45 (3.4:1 → 5.5:1 on bg, clears AA 4.5:1 for body text); light-mode `--destructive` 0.577 0.245 27.325 → 0.505 0.22 27.3 (3.8:1 → 5.1:1 for "✗ Špatně" text, bg-destructive/10 variants retain soft tint); quiz correct-answer `border-green-600` → `border-green-700` (2.8:1 → 4.8:1 clears 3:1 non-text). Dark-mode tokens already comfortably above AA, left unchanged. Card/input borders left soft — WCAG 1.4.11 applies strictly only to interactive form controls, captured as future work. Screenshots: `docs/ui-review/contrast-2026-04-23/`.
 
-- [ ] **Post-MVP: logic refinement — SM-2 tuning**
+- [x] **Post-MVP: logic refinement — SM-2 tuning**
   - Review `lib/sm2.ts` against the canonical SM-2 spec (https://super-memory.com/english/ol/sm2.htm). Verify grade-to-ease delta, minimum ease floor (1.3), interval growth on repetition=1 (1 day), repetition=2 (6 days), repetition≥3 (interval × ease). Fix any deviation. Add at least 4 unit test cases covering each grade bucket (0–2 fail, 3–5 pass).
   - Commit: `fix: SM-2 tuning + unit tests`.
+  - Done: canonical-spec deviation found — on q<3, the spec says "start repetitions from the beginning without changing the E-Factor", but the code was applying the ease delta anyway. Fixed: ease is now preserved on failure (grade<3) and only updated on passing grades. Grade-to-ease formula, MIN_EASE=1.3 floor, and interval progression (I(1)=1, I(2)=6, I(n)=I(n-1)×EF) all match spec. Tests restructured by scenario with dedicated cases for each grade 0–5 (19 tests total, all passing).
 
 - [ ] **Post-MVP: logic refinement — selector weighting**
   - Review `lib/selector.ts`. Verify weighted pick formula against the spec: `(1 / (mastery.ease / 2.5)) × max(0, daysOverdue) × topic.weight` with unseen-first fallback. Add tie-breaking (randomness to avoid streaks on the same question). Add unit tests.
