@@ -49,7 +49,7 @@ echo "=== $STAMP loop-next start ===" >> "$LOG"
 # jq extracts a human-readable summary line per event; raw JSON is tee'd to a sibling .jsonl for debugging.
 JSONL="$REPO/scripts/loop.jsonl"
 claude -p \
-  --model claude-haiku-4-5-20251001 \
+  --model claude-opus-4-7 \
   --dangerously-skip-permissions \
   --verbose \
   --output-format stream-json \

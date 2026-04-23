@@ -17,19 +17,20 @@ Vault schema: `~/SecondBrain/CLAUDE.md`. Follow it when writing to the vault. Ne
 
 ## How the Loop Works
 
-1. `scripts/loop-runner.sh` is invoked by macOS launchd every 20 min.
-2. It runs `claude -p --model claude-haiku-4-5-20251001 "/loop-next"`.
-3. `/loop-next` reads the top unchecked item in `BACKLOG.md`, does it, commits, marks it `[x]`.
-4. On rate-limit, the runner exits 0 silently; launchd retries. When the token window resets, work resumes automatically.
+1. `scripts/loop-runner.sh` is invoked by macOS launchd every 60 seconds.
+2. A lock prevents concurrent runs — if an iteration is mid-flight, the new fire exits instantly.
+3. Each iteration runs `claude -p --model claude-opus-4-7 "/loop-next"` (best model, no budget throttling).
+4. `/loop-next` reads the top unchecked item in `BACKLOG.md`, does it, commits, marks it `[x]`.
+5. On rate-limit, the runner exits 0 silently; launchd retries every minute. When the token window resets, work resumes within ~60s.
 
 See `.claude/commands/loop-next.md` for the exact iteration logic.
 
-## Token Economy — Hard Rules
+## Work Quality — Hard Rules
 
-This project is aggressively cost-optimized. Every Claude invocation runs on Haiku by default.
+The loop runs on Opus with no cost ceiling. Don't optimize for token use; optimize for correctness and clarity.
 
-- **Default model is Haiku.** Only escalate when the task genuinely requires it (nontrivial design, ambiguous architecture). Escalate via a subagent, not by switching the main session.
-- **Subagent model choice**: `Explore` → Haiku. `Plan` → Sonnet. Never Opus unless Michal explicitly asks.
+- **Default model is Opus** (set at the runner level). You don't need to pick a model.
+- **Subagent model choice**: `Explore` and `Plan` subagents may use Sonnet for routine research; reserve Opus for the items that genuinely need it. Don't pre-optimize.
 - **No narration.** Tool calls are visible; do not announce them.
 - **No docstrings or multi-line comments.** Comments only when the *why* is non-obvious.
 - **No defensive coding.** Validate at system boundaries only. Trust internal code.

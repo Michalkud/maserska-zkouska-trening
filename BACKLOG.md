@@ -16,7 +16,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Write `docs/decisions/001-stack.md`. Default candidate: Next.js 15 App Router + TypeScript + Prisma + SQLite + shadcn/ui + Tailwind + pnpm. Confirm or deviate, with reasons.
   - Commit: `docs: ADR 001 — tech stack`.
 
-- [ ] **Scaffold Next.js app**
+- [x] **Scaffold Next.js app**
   - `pnpm create next-app@latest` with TS + Tailwind + App Router.
   - Install: `prisma`, `@prisma/client`, shadcn/ui init, `better-sqlite3` (via Prisma).
   - Configure Prisma with SQLite provider at `./data/app.db`.

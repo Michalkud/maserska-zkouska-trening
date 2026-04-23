@@ -28,15 +28,17 @@ cat > "$PLIST" <<PLIST_EOF
     <string>$RUNNER</string>
   </array>
 
-  <key>StartCalendarInterval</key>
-  <array>
-    <dict><key>Minute</key><integer>7</integer></dict>
-    <dict><key>Minute</key><integer>27</integer></dict>
-    <dict><key>Minute</key><integer>47</integer></dict>
-  </array>
+  <!-- Fire every 60 seconds. Concurrent-run lock ensures only one iteration
+       runs at a time; fires that arrive mid-iteration exit instantly. As soon
+       as one iteration finishes, the next fire picks up immediately. -->
+  <key>StartInterval</key>
+  <integer>60</integer>
 
   <key>RunAtLoad</key>
   <false/>
+
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
 
   <key>StandardOutPath</key>
   <string>$REPO/scripts/loop.log</string>
@@ -66,7 +68,7 @@ launchctl unload "$PLIST" 2>/dev/null || true
 launchctl load "$PLIST"
 
 echo "Installed: $PLIST"
-echo "Firing schedule: :07, :27, :47 every hour (every ~20 min)"
+echo "Firing schedule: every 60s (lock enforces no concurrent runs)"
 echo "Verify with: launchctl list | grep maserska"
 echo "Watch with:  tail -f $REPO/scripts/loop.log"
 echo "Stop with:   $REPO/scripts/teardown-launchd.sh"
