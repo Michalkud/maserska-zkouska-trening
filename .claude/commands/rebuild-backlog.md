@@ -1,28 +1,40 @@
 ---
-description: Rebuild BACKLOG.md from project state when it's empty or stale.
+description: Rebuild BACKLOG.md when empty or stale. In continuous-improvement mode, generate the next batch.
 ---
 
-BACKLOG.md is empty or Michal asked for a refresh. Regenerate it.
+BACKLOG.md needs items. Two modes.
 
-## Procedure
+## Mode A — MVP incomplete
+
+Some pre-"Post-MVP" item is still `[ ]`. That should never require rebuild — tell the user their BACKLOG already has pending work and exit.
+
+## Mode B — continuous improvement
+
+Every item above the `## Post-MVP — UI Testing & Continuous Improvement` heading is `[x]` AND every item below it is `[x]`. The loop is in continuous mode.
+
+Procedure:
 
 1. Read `CLAUDE.md` and `~/SecondBrain/wiki/projects/maserska-zkouska.md`.
-2. Inspect repo state: `git log --oneline -30`, list top-level files, check which docs/ and app/ files exist.
-3. Compare to what "finished" looks like:
-   - curriculum researched → `docs/curriculum.md` exists + `docs/sources/` populated
-   - stack decided → `docs/decisions/001-stack.md` exists
-   - Next.js scaffolded → `package.json` + `app/` exist
-   - Prisma schema → `prisma/schema.prisma` with Topic/Question/Attempt/MasteryScore
-   - questions seeded → Prisma seed produces nonzero rows for at least one Topic
-   - quiz UI → `app/quiz/page.tsx` + working server action
-   - SM-2 → `lib/sm2.ts` with tests
-   - dashboard → `app/page.tsx` showing mastery per topic
-4. Write the next 6–10 items in `BACKLOG.md`, in execution order, each sized to one iteration.
-5. Commit: `chore: rebuild BACKLOG`.
-6. Exit.
+2. Inspect:
+   - `docs/ui-review/findings.md` — any unresolved `- [ ]` findings? (Those drive "fix top finding" items.)
+   - `git log --oneline -30` — what was done recently? Avoid churning on the same concerns.
+   - `src/app/`, `src/lib/`, `src/components/ui/` — what surfaces exist to polish?
+   - `prisma/schema.prisma` + seed state — are more curriculum domains unseeded?
+3. Generate a new batch of 10–15 post-MVP items under the same `## Post-MVP` heading. Mix of:
+   - 3–5 × "fix top unresolved UI finding" (if findings.md has open items; otherwise omit)
+   - 2–3 × design polish (concrete focus each: typography, color, layout, empty states, loading states, error states, mobile)
+   - 2–3 × logic refinement (SM-2 edge cases, selector tie-breaking, session pacing, streak logic, explanation quality)
+   - 1–2 × new small features from the original project goals (e.g. daily goal, pomodoro-like pacing, audio pronunciation of Czech terms, etc.) — only within the scope in `~/SecondBrain/wiki/projects/maserska-zkouska.md`
+   - 1 × UI sweep refresh (if the last sweep is more than 3 days old)
+   - Always end with: `- [ ] **Post-MVP: regenerate improvement batch**` so the loop never runs dry
+4. Don't re-add items that are already done and clearly stable — check git log.
+5. Don't invent features Michal didn't ask for.
+6. Commit: `chore: rebuild BACKLOG (continuous improvement round N)` where N is incremented from the previous round commit.
+7. Exit.
 
 ## Rules
 
-- Do not re-add items that are already done.
-- Do not invent features Michal didn't ask for. Stick to the scope in `~/SecondBrain/wiki/projects/maserska-zkouska.md`.
-- If you can't tell whether an item is done, check the code, not the git log.
+- Each item sized to ≤1 iteration (~10–30 min of Opus work).
+- Every item specifies the commit message.
+- Never delete completed `[x]` items — they're the record.
+- If repo state looks broken (tests failing, dev server not starting), add a `[BLOCKED: needs michal]` item at top explaining what's wrong, instead of piling more work on.

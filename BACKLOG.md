@@ -34,18 +34,18 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Prisma seed script populates Topic + Question rows.
   - Commit: `feat: seed first curriculum domain`.
 
+- [ ] **SM-2 mastery + adaptive selection**
+  - `lib/sm2.ts` — pure SM-2 implementation (ease, interval, repetitions, dueAt).
+  - `lib/selector.ts` — weight by `(1 / mastery) × overdueDays × topic.weight`; fall back to unseen questions first.
+  - Unit tests for sm2.ts.
+  - Commit: `feat: SM-2 scoring + adaptive selection`.
+
 - [ ] **Quiz UI — next-question selection + answer flow**
   - `app/quiz/page.tsx` picks one due question (see `lib/selector.ts`).
   - Multiple-choice renders as radio list; open-answer renders as textarea.
   - Submit → server action in `app/attempt/route.ts` → grade, insert Attempt, update MasteryScore via `lib/sm2.ts`.
   - Show correct answer + explanation after submit.
   - Commit: `feat: quiz page + attempt logging`.
-
-- [ ] **SM-2 mastery + adaptive selection**
-  - `lib/sm2.ts` — pure SM-2 implementation (ease, interval, repetitions, dueAt).
-  - `lib/selector.ts` — weight by `(1 / mastery) × overdueDays × topic.weight`; fall back to unseen questions first.
-  - Unit tests for sm2.ts.
-  - Commit: `feat: SM-2 scoring + adaptive selection`.
 
 - [ ] **Progress dashboard**
   - `app/page.tsx` — per-topic mastery bar, total due today, streak count.
