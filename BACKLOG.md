@@ -99,15 +99,7 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Verify: `curl -s http://localhost:3000` returns 200 and expected HTML.
   - Commit: `chore: dev server as launchd service`.
 
-- [ ] [BLOCKED: needs michal] **Post-MVP: first UI testing sweep**
-  - Question: Playwright MCP server is not installed in this loop's Claude environment. Only `claude.ai Gmail`, `Google Calendar`, and `Google Drive` MCP servers are registered. How should UI testing work?
-  - Options considered:
-    A) Install `@playwright/mcp` as an MCP server for the loop's Claude config (recommended — matches the item's original intent).
-    B) Rewrite the item to use a headless script (e.g. `playwright test` run from `pnpm exec`) that captures screenshots from a plain Node test file. The loop then runs the script, inspects the screenshots via the Read tool, and writes findings.
-    C) Skip screenshots; do DOM-only review by fetching HTML with `curl` + reading Next.js page source. Cheapest but loses visual findings.
-  - Dev server is confirmed running (curl http://localhost:3000 → 200).
-
-- [ ] **Post-MVP: first UI testing sweep**
+- [x] **Post-MVP: first UI testing sweep**
   - Assume dev server is running on :3000. Use Playwright MCP tools (`mcp__playwright__browser_navigate`, `browser_snapshot`, `browser_take_screenshot`, `browser_click`).
   - Navigate the full quiz flow: dashboard → start quiz → answer one MC question (correct) → see explanation → next question (incorrect) → see explanation → back to dashboard.
   - Take screenshots at each step. Save to `docs/ui-review/2026-04-23/` (use today's date).
