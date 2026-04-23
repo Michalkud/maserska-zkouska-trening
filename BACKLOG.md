@@ -93,7 +93,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
 
 Everything below this line runs *after* the MVP app is functional. Items here either test the live app or polish an existing feature. The loop cycles through them indefinitely — when this section is fully `[x]`, the final meta-item regenerates a new batch via `/rebuild-backlog`.
 
-- [ ] **Post-MVP: set up persistent dev server**
+- [x] **Post-MVP: set up persistent dev server**
   - Create a second launchd agent `com.michalkudrnac.maserska-dev-server.plist` that runs `pnpm dev` as a keep-alive service on port 3000.
   - Write `scripts/setup-dev-server.sh` / `scripts/teardown-dev-server.sh` matching the loop scripts pattern.
   - Verify: `curl -s http://localhost:3000` returns 200 and expected HTML.

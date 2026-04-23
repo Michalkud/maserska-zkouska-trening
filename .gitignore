@@ -4,6 +4,8 @@ scripts/loop.log.*
 scripts/loop.jsonl
 scripts/loop.jsonl.*
 scripts/.loop-runner.lock/
+scripts/dev-server.log
+scripts/dev-server.log.*
 
 # Claude Code
 .claude/stats-cache.json
