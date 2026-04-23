@@ -104,8 +104,9 @@ EXIT_CODE="${PIPESTATUS[0]}"
 
 echo "--- exit=$EXIT_CODE ---" >> "$LOG"
 
-# Detect rate-limit patterns in the tail of the log so `grep rate-limited loop.log` works.
-if tail -n 400 "$LOG" | grep -qiE "rate.?limit|quota|429|overloaded"; then
+# Detect actual rate-limit errors (not the "rate_limit_event" metadata which
+# fires on every normal message). Match explicit error payloads / HTTP 429.
+if tail -n 400 "$JSONL" 2>/dev/null | grep -qE '"type":"error"|"error_type":"rate_limit"|"status_code":429|HTTP[/ ]1\.[01] 429'; then
   echo "$(date -Iseconds) runner: rate-limited, will retry on next launchd fire" >> "$LOG"
 fi
 
