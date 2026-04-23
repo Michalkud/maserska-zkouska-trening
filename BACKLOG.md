@@ -80,7 +80,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Run seed and verify.
   - Commit: `feat: seed domain 5 — first aid`.
 
-- [ ] **Seed Domain 6 — Business Operations & Compliance**
+- [x] **Seed Domain 6 — Business Operations & Compliance**
   - Add topic(s) (e.g. `zivnostenske-pravo`, `dane-a-ucetnictvi`, `gdpr-a-klientska-data`, `pojisteni`) to `prisma/seed.ts`.
   - Write ~20 MC + ~5 open questions covering sub-topics 6.1–6.8 (trade registration, pricing, tax compliance, GDPR, client database, insurance/liability, HR, CPD).
   - Cite NSK 69-037-M § Doména 6, Zákon 455/1991 Sb., Nařízení EU 679/2016 in `sourceRef`.
