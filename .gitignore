@@ -1,0 +1,36 @@
+# Loop artifacts
+scripts/loop.log
+scripts/loop.log.*
+
+# Claude Code
+.claude/stats-cache.json
+.claude/history.jsonl
+.claude/ide/
+
+# Node
+node_modules/
+.next/
+dist/
+build/
+*.tsbuildinfo
+
+# Env
+.env
+.env.*
+!.env.example
+
+# DB
+data/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
