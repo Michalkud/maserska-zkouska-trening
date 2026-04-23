@@ -34,7 +34,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Prisma seed script populates Topic + Question rows.
   - Commit: `feat: seed first curriculum domain`.
 
-- [ ] **SM-2 mastery + adaptive selection**
+- [x] **SM-2 mastery + adaptive selection**
   - `lib/sm2.ts` — pure SM-2 implementation (ease, interval, repetitions, dueAt).
   - `lib/selector.ts` — weight by `(1 / mastery) × overdueDays × topic.weight`; fall back to unseen questions first.
   - Unit tests for sm2.ts.
