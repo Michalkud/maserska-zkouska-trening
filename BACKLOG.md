@@ -52,7 +52,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Link to `/quiz`.
   - Commit: `feat: dashboard`.
 
-- [ ] **Seed Domain 1 — Client Communication & Booking Management**
+- [x] **Seed Domain 1 — Client Communication & Booking Management**
   - Add topic(s) (e.g. `komunikace-s-klientem`, `dokumentace-a-gdpr`) to `prisma/seed.ts` with appropriate weight(s).
   - Write ~20 multiple-choice questions + ~5 open questions in Czech covering sub-topics 1.x in `docs/curriculum.md` (scheduling, intake/contraindication screening, communication protocols, special populations, GDPR-compliant record-keeping).
   - Each question needs `explanationCs` and `sourceRef` (cite NSK 69-037-M § Doména 1 and relevant sub-section).
