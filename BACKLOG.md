@@ -12,7 +12,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Write `docs/curriculum.md` — list the exam topic domains, their sub-topics, and a rough weight (% of exam). Cite each domain to a source in `docs/sources/`.
   - Commit: `docs: initial curriculum research from primary sources`.
 
-- [ ] **Decide stack and document the decision**
+- [x] **Decide stack and document the decision**
   - Write `docs/decisions/001-stack.md`. Default candidate: Next.js 15 App Router + TypeScript + Prisma + SQLite + shadcn/ui + Tailwind + pnpm. Confirm or deviate, with reasons.
   - Commit: `docs: ADR 001 — tech stack`.
 
