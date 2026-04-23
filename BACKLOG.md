@@ -6,7 +6,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
 
 ---
 
-- [ ] **Research Czech masér qualification exam structure**
+- [x] **Research Czech masér qualification exam structure**
   - Fetch primary sources: hodnotící standard NSK 69-037-M (Národní soustava kvalifikací), zákon č. 455/1991 Sb. (živnostenský zákon, příloha 2, vázané živnosti — masérské, rekondiční a regenerační služby), relevant prováděcí vyhlášky for hygiene/first-aid requirements.
   - Save raw PDFs / HTML dumps to `docs/sources/` with filenames reflecting the source.
   - Write `docs/curriculum.md` — list the exam topic domains, their sub-topics, and a rough weight (% of exam). Cite each domain to a source in `docs/sources/`.

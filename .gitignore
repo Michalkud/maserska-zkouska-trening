@@ -1,6 +1,8 @@
 # Loop artifacts
 scripts/loop.log
 scripts/loop.log.*
+scripts/loop.jsonl
+scripts/loop.jsonl.*
 scripts/.loop-runner.lock/
 
 # Claude Code

@@ -44,19 +44,36 @@ STAMP="$(date -Iseconds)"
 echo "" >> "$LOG"
 echo "=== $STAMP loop-next start ===" >> "$LOG"
 
-# Run one iteration. Haiku by default; /loop-next may escalate via subagents.
-# --dangerously-skip-permissions is required for non-interactive headless runs.
-OUTPUT="$(claude -p \
+# Stream stdout+stderr live via tee so `tail -f loop.log` shows progress during the run.
+# --verbose --output-format stream-json emits JSON events for each assistant turn, tool use, and tool result.
+# jq extracts a human-readable summary line per event; raw JSON is tee'd to a sibling .jsonl for debugging.
+JSONL="$REPO/scripts/loop.jsonl"
+claude -p \
   --model claude-haiku-4-5-20251001 \
   --dangerously-skip-permissions \
-  "/loop-next" 2>&1)"
-EXIT_CODE=$?
+  --verbose \
+  --output-format stream-json \
+  "/loop-next" 2>&1 \
+  | tee -a "$JSONL" \
+  | jq -r --unbuffered '
+      if .type == "assistant" and (.message.content // [] | length) > 0 then
+        (.message.content[] | (if .type=="text" then (.text | gsub("\n"; " ") | .[0:300])
+                               elif .type=="tool_use" then "TOOL \(.name) \((.input // {}) | tostring | .[0:200])"
+                               else empty end)) // empty
+      elif .type == "user" and (.message.content // [] | length) > 0 then
+        (.message.content[] | select(.type=="tool_result")
+          | "  RESULT \((.content // "" | tostring | .[0:200]))") // empty
+      elif .type == "result" then
+        "=== done: \(.subtype // "ok") cost=$\(.total_cost_usd // 0) dur=\(.duration_ms // 0)ms turns=\(.num_turns // 0) ==="
+      else empty end
+    ' 2>/dev/null \
+  | tee -a "$LOG" > /dev/null
+EXIT_CODE="${PIPESTATUS[0]}"
 
-echo "$OUTPUT" >> "$LOG"
 echo "--- exit=$EXIT_CODE ---" >> "$LOG"
 
-# Detect rate-limit patterns in output and log them plainly so `grep rate-limited loop.log` works.
-if echo "$OUTPUT" | grep -qiE "rate.?limit|quota|429|overloaded"; then
+# Detect rate-limit patterns in the tail of the log so `grep rate-limited loop.log` works.
+if tail -n 400 "$LOG" | grep -qiE "rate.?limit|quota|429|overloaded"; then
   echo "$(date -Iseconds) runner: rate-limited, will retry on next launchd fire" >> "$LOG"
 fi
 
