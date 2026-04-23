@@ -67,9 +67,9 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 ## Mobile (390 × 844)
 
-- [ ] **P2 [visual]** Stat cards stack vertically on mobile — reasonable — but they take 60 % of the above-the-fold space, pushing the primary "Spustit trénink" CTA and the topic list below. Consider collapsing into a single compact header row on mobile. Screenshot: `07-mobile-dashboard.png`.
+- [x] **P2 [visual]** Stat cards stack vertically on mobile — reasonable — but they take 60 % of the above-the-fold space, pushing the primary "Spustit trénink" CTA and the topic list below. Consider collapsing into a single compact header row on mobile. Screenshot: `07-mobile-dashboard.png`. → Fixed: mobile `<sm` now renders a single compact primary-tinted card with "K opakování dnes 149" on the left and a divider-separated "Série 1 den" on the right; "Otázek v databázi" vanity metric dropped from mobile. Desktop layout unchanged (`hidden sm:grid sm:grid-cols-4`). Stat block height on mobile drops from ~260 px to ~80 px, which moves 4–5 topic rows above the fold at 390×844. Screenshots: `mobile-2026-04-23/before-dashboard.png`, `after-dashboard.png`, regression `after-dashboard-desktop-regression.png`.
 
-- [ ] **P3 [visual]** Quiz page padding on mobile looks slightly tight — text touches viewport edges at ~16 px margin. Bump to 20–24 px. Screenshot: `08-mobile-quiz.png`.
+- [x] **P3 [visual]** Quiz page padding on mobile looks slightly tight — text touches viewport edges at ~16 px margin. Bump to 20–24 px. Screenshot: `08-mobile-quiz.png`. → Verified already resolved: `main` on `/quiz` uses `px-6` (24 px, within 20–24 px target). Computed `paddingLeft/Right = 24px` at viewport 390; H1 stem and MC choice cards both have comfortable breathing room (originally sweep-time screenshot likely predated the `px-6` change). Screenshot: `mobile-2026-04-23/before-quiz.png`, `after-quiz.png`.
 
 ---
 

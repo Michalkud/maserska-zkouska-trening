@@ -109,7 +109,37 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <section className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-4">
+      <section className="mb-6 rounded-lg border border-primary/20 bg-primary/5 p-4 sm:hidden">
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <div className="text-[11px] font-medium uppercase tracking-wide text-primary">
+              {totalDue > 0 ? "K opakování dnes" : "Dnes splněno"}
+            </div>
+            {totalDue > 0 ? (
+              <div className="mt-0.5 text-3xl font-semibold tabular-nums leading-none text-primary">
+                {totalDue}
+              </div>
+            ) : (
+              <p className="mt-1 text-sm font-medium leading-snug text-balance">
+                Máš všechno za sebou.
+              </p>
+            )}
+          </div>
+          <div className="shrink-0 border-l border-primary/20 pl-4 text-right">
+            <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Série
+            </div>
+            <div className="mt-0.5 text-xl font-semibold tabular-nums leading-none">
+              {streak}
+              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                {dayLabel(streak)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-10 hidden gap-3 sm:grid sm:grid-cols-4">
         {totalDue > 0 ? (
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 sm:col-span-2">
             <div className="text-xs font-medium uppercase tracking-wide text-primary">
