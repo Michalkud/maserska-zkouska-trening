@@ -161,6 +161,58 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
 - [x] **Post-MVP: fix top unresolved UI finding**
   - Done: topic rows on dashboard are now clickable — each `<li>` in `src/app/page.tsx` wraps its content in `<Link href={\`/quiz?topic=${t.id}\`}>` with hover/focus affordance. Quiz page in `src/app/quiz/page.tsx` reads `searchParams.topic`, filters questions by that topicId, and shows an "okruh" pill next to the topic name. Scope-aware empty state. Verified via Playwright: click "Hygiena a dezinfekce" → `/quiz?topic=…` → hygiene question with scope pill rendered. tsc + eslint clean. Screenshots: `docs/ui-review/topic-click-scope-2026-04-23/`.
 
+- [x] **Post-MVP: regenerate improvement batch**
+  - Done: rebuilt BACKLOG continuous-improvement round 2 with 12 items (4 × fix top finding, 3 × design polish, 2 × logic refinement, 2 × new feature, 1 × regen meta). Items below appended by `/rebuild-backlog`.
+
+---
+
+## Post-MVP — Continuous Improvement Round 2
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - Open `docs/ui-review/findings.md`. Find the first unresolved `- [ ]`. The expected top at the time of this batch is the Dashboard P2 [copy] — "Zvládnutí podle okruhu" header collapses visual hierarchy with stat-card labels; upgrade it to a proper H2 (drop uppercase small-caps treatment, bump weight, add mb tuned to the 4pt grid). Fix it, mark `[x]`, capture before/after screenshots if it's a visual change.
+  - Commit: `<type>: <finding summary>` where `<type>` is `fix`, `feat`, or `style` as appropriate.
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - (Same pattern — next unresolved finding. Next expected: Quiz P1 [interaction] progress indicator — render "Otázka X z Y" or "X k dnešnímu opakování" in the quiz header near the topic pill. Source the denominator from `lib/selector.ts` — due-today count for the (optionally scoped) topic.)
+  - Commit: `<type>: <finding summary>`.
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - (Same pattern. Next expected: Quiz P2 [visual] — "✓ Správně" / "✗ Špatně" pill is understated for the single most important feedback element. Enlarge it, switch to filled solid badges (primary/destructive tokens), move above the explanation card, add a subtle entrance animation if cheap.)
+  - Commit: `<type>: <finding summary>`.
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - (Same pattern. Next expected: Quiz P2 [copy] — remove the "SPRÁVNÁ ODPOVĚĎ: …" textual duplication in the explanation block; the green outline on the correct radio already conveys it. If the wrong-answer explanation would become too terse, keep a brief "Správná odpověď je zvýrazněna zeleně." pointer instead of re-spelling the answer.)
+  - Commit: `<type>: <finding summary>`.
+
+- [ ] **Post-MVP: design polish — empty states**
+  - Audit three empty states: (1) dashboard when `K opakování dnes = 0` (celebrate, don't show disabled CTA); (2) `/quiz` with no due question (scoped or unscoped — direct back to dashboard with context); (3) `/review` with zero recent mistakes (neutral celebratory copy). Write distinct illustrations (text-only, no assets) and CTAs for each. Keep Czech tone warm, not marketing.
+  - Screenshots before/after in `docs/ui-review/empty-states-YYYY-MM-DD/`.
+  - Commit: `style: empty-state pass`.
+
+- [ ] **Post-MVP: design polish — mobile layout pass**
+  - Cover findings.md's two mobile items in one pass: (a) dashboard stat cards on mobile collapse to a single compact header row above the fold; (b) quiz page horizontal padding bumped from ~16 px to 20–24 px so Czech diacritics don't kiss the edge. Verify at 390×844 via Playwright; screenshots before/after in `docs/ui-review/mobile-YYYY-MM-DD/`. Mark both findings `[x]`.
+  - Commit: `style: mobile layout pass`.
+
+- [ ] **Post-MVP: design polish — loading + in-flight feedback**
+  - The submit button currently just disables on attempt POST; findings.md P2 [performance]. Add an inline spinner (or animated dots) + keep the button's visual footprint stable (no layout shift). If the round-trip is <100 ms on localhost, still wire it so slow conditions degrade gracefully. Consider `useFormStatus` or equivalent pending state.
+  - Commit: `feat: pending state on attempt submit`.
+
+- [ ] **Post-MVP: logic refinement — streak calculation audit + tests**
+  - Locate the "Série" streak calculation (likely in `src/app/page.tsx` or a helper). Audit: does it count consecutive calendar days with ≥1 attempt in local time? What happens on timezone edges? What happens if there are attempts today but none yesterday? Extract to `src/lib/streak.ts` if inline. Add unit tests for: (a) brand new user with 0 attempts, (b) 1 attempt today, (c) 3 consecutive days, (d) gap day breaks streak, (e) attempts spanning midnight local.
+  - Commit: `fix: streak calc + unit tests`.
+
+- [ ] **Post-MVP: logic refinement — session pacing / end-of-session summary**
+  - After the user exhausts due questions in the current session (or after a sensible cap, e.g. 20 attempts in a row), show an end-of-session card: count of questions, accuracy %, topics touched, next due date. Keep it on `/quiz` — don't redirect. Persist nothing new; just read the last N attempts. Don't auto-redirect; provide "Zpět na přehled" + "Pokračovat" buttons.
+  - Commit: `feat: end-of-session summary`.
+
+- [ ] **Post-MVP: new feature — flag a question**
+  - Covers findings.md P2 [interaction] "nahlásit otázku". Add a subtle "Nahlásit otázku" icon/link on each graded quiz card. Click → optional short textarea ("Co je špatně?") → POST to a new `/api/flag/route.ts` that writes to a new `QuestionFlag` Prisma model (`id`, `questionId`, `reason?`, `createdAt`). Migration, server action, minimal form UI. No admin view yet — raw table access is fine.
+  - Commit: `feat: question flagging`.
+
+- [ ] **Post-MVP: new feature — daily goal indicator**
+  - Add a small daily goal target (default: 20 attempts/day, stored as a local constant for now; no settings UI) and render on the dashboard as `dnes: 7 / 20` next to the stats. When hit, badge turns primary with a subtle check. Read from `Attempt` rows with `answeredAt` in local-day range. No new tables yet.
+  - Commit: `feat: daily goal indicator`.
+
 - [ ] **Post-MVP: regenerate improvement batch**
   - Run `/rebuild-backlog` to generate the next batch of 10–15 post-MVP items based on the current state of the app, `docs/ui-review/findings.md`, and open questions logged in SecondBrain.
   - Commit: `chore: regenerate post-MVP batch`.
