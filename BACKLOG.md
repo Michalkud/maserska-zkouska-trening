@@ -124,9 +124,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `style: typography + spacing polish`.
   - Done: dashboard header mb-8 (was mb-10); "Zvládnutí podle okruhu" upgraded from uppercase-tiny to text-sm font-semibold (proper H2 hierarchy); topic rows tightened (px-4 py-3, space-y-2, h-2 progress) with topic name bumped to text-base font-medium for primary content legibility. Quiz H1 stem upgraded to text-2xl leading-snug text-balance with max-w-prose (was text-xl leading-relaxed — headings shouldn't use body line-height); MC choice text bumped text-sm → text-base for Czech diacritics readability; prose blocks constrained to max-w-prose. Verified: tsc --noEmit clean. Screenshots: `docs/ui-review/design-polish-2026-04-23/`.
 
-- [ ] **Post-MVP: design polish — colour + contrast pass**
+- [x] **Post-MVP: design polish — colour + contrast pass**
   - Audit WCAG AA contrast on every text / button / badge via `mcp__browsertools__runAccessibilityAudit` (if available) or manual contrast ratios. Shift shadcn tokens as needed. Preserve the shadcn semantic palette (primary/accent/destructive).
   - Commit: `style: a11y contrast pass`.
+  - Done: light-mode `--muted-foreground` 0.556 → 0.45 (3.4:1 → 5.5:1 on bg, clears AA 4.5:1 for body text); light-mode `--destructive` 0.577 0.245 27.325 → 0.505 0.22 27.3 (3.8:1 → 5.1:1 for "✗ Špatně" text, bg-destructive/10 variants retain soft tint); quiz correct-answer `border-green-600` → `border-green-700` (2.8:1 → 4.8:1 clears 3:1 non-text). Dark-mode tokens already comfortably above AA, left unchanged. Card/input borders left soft — WCAG 1.4.11 applies strictly only to interactive form controls, captured as future work. Screenshots: `docs/ui-review/contrast-2026-04-23/`.
 
 - [ ] **Post-MVP: logic refinement — SM-2 tuning**
   - Review `lib/sm2.ts` against the canonical SM-2 spec (https://super-memory.com/english/ol/sm2.htm). Verify grade-to-ease delta, minimum ease floor (1.3), interval growth on repetition=1 (1 day), repetition=2 (6 days), repetition≥3 (interval × ease). Fix any deviation. Add at least 4 unit test cases covering each grade bucket (0–2 fail, 3–5 pass).

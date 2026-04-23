@@ -93,7 +93,7 @@ export function QuizForm({
                 className={[
                   "flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-colors",
                   !showResult && isSelected ? "border-primary bg-muted" : "",
-                  isCorrect ? "border-green-600 bg-green-50" : "",
+                  isCorrect ? "border-green-700 bg-green-50" : "",
                   isWrongChoice ? "border-destructive bg-destructive/10" : "",
                   showResult ? "cursor-default" : "hover:bg-muted/60",
                 ].join(" ")}
