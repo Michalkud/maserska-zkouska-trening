@@ -93,12 +93,20 @@ export default async function DashboardPage() {
             Adaptivní trénink na profesní kvalifikaci NSK 69-037-M.
           </p>
         </div>
-        <Link
-          href="/quiz"
-          className={buttonVariants({ size: "lg" })}
-        >
-          {totalDue > 0 ? "Spustit trénink" : "Zkusit otázku"}
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/review"
+            className={buttonVariants({ variant: "outline", size: "lg" })}
+          >
+            Chybovník
+          </Link>
+          <Link
+            href="/quiz"
+            className={buttonVariants({ size: "lg" })}
+          >
+            {totalDue > 0 ? "Spustit trénink" : "Zkusit otázku"}
+          </Link>
+        </div>
       </header>
 
       <section className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-3">

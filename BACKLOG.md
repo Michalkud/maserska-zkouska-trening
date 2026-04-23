@@ -150,9 +150,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `feat: mastery sparklines on dashboard`.
   - Done: plain SVG — no new deps. `src/lib/mastery-history.ts` fetches attempts from the last 30 days with topicId via `question: { select }`, buckets by local-day index, returns `Map<topicId, (number|null)[]>` of daily mean grades. `src/components/mastery-sparkline.tsx` renders a 84×24 SVG: dashed muted baseline for topics with no attempts, a single dot for one data point, a polyline through filled days (splitting across `null` gaps) with an endpoint dot otherwise. Dashboard row layout now puts the progress bar (`flex-1`) and sparkline side-by-side via `flex items-center gap-3`. Verified: 17 topics render, tsc/eslint clean, HTTP 200 and screenshot captured in `docs/ui-review/sparklines-2026-04-23/`.
 
-- [ ] **Post-MVP: per-question wrong-answer analysis**
+- [x] **Post-MVP: per-question wrong-answer analysis**
   - Add a "Review mistakes" page listing the 20 most recently missed questions with their correct answer + explanation. Prioritize review-session curation.
   - Commit: `feat: mistake review page`.
+  - Done: `src/app/review/page.tsx` queries `Attempt` with `correct=false` ordered by `answeredAt desc`, dedupes by `questionId` keeping the latest miss per question, caps at 20. Each entry shows topic name, timestamp (time-of-day when same-day, `d. m.` otherwise), stem, correct answer (green-bordered card), and explanation. Dashboard header now has a "Chybovník" outline button next to the primary CTA. Verified: HTTP 200 at `/review` with real miss data rendered; tsc and eslint clean.
 
 - [ ] **Post-MVP: fix top unresolved UI finding**
 
