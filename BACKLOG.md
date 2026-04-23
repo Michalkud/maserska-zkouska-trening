@@ -145,9 +145,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `feat: quiz keyboard shortcuts`.
   - Done: window-level `keydown` listener in `quiz-form.tsx` — digit keys set the matching choice; `Enter` submits MC (skipped if focus is in an editable field); when graded, `N`/`Enter` advance to next question; `Esc` pushes `/`. Modifier keys (meta/ctrl/alt) are ignored. Subtle `ShortcutHints` footer renders `<kbd>` chips contextual to state (1–4/Enter pre-submit → N/Enter post-grade; Esc always). Verified via Playwright: pressed 2 (selected), Enter (graded ✓ Správně), N (advanced to next question on new topic), Esc (returned to dashboard). `tsc --noEmit` and `eslint` clean.
 
-- [ ] **Post-MVP: add mastery history sparkline per topic**
+- [x] **Post-MVP: add mastery history sparkline per topic**
   - Dashboard: next to each topic mastery bar, render a 30-day sparkline of daily average grade (Recharts or plain SVG). Aggregate from the Attempt table in a server action.
   - Commit: `feat: mastery sparklines on dashboard`.
+  - Done: plain SVG — no new deps. `src/lib/mastery-history.ts` fetches attempts from the last 30 days with topicId via `question: { select }`, buckets by local-day index, returns `Map<topicId, (number|null)[]>` of daily mean grades. `src/components/mastery-sparkline.tsx` renders a 84×24 SVG: dashed muted baseline for topics with no attempts, a single dot for one data point, a polyline through filled days (splitting across `null` gaps) with an endpoint dot otherwise. Dashboard row layout now puts the progress bar (`flex-1`) and sparkline side-by-side via `flex items-center gap-3`. Verified: 17 topics render, tsc/eslint clean, HTTP 200 and screenshot captured in `docs/ui-review/sparklines-2026-04-23/`.
 
 - [ ] **Post-MVP: per-question wrong-answer analysis**
   - Add a "Review mistakes" page listing the 20 most recently missed questions with their correct answer + explanation. Prioritize review-session curation.

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { MasterySparkline } from "@/components/mastery-sparkline";
 import { prisma } from "@/lib/db";
+import { HISTORY_DAYS, masteryHistoryByTopic } from "@/lib/mastery-history";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +24,7 @@ function dayLabel(n: number): string {
 }
 
 export default async function DashboardPage() {
-  const [topics, attempts] = await Promise.all([
+  const [topics, attempts, history] = await Promise.all([
     prisma.topic.findMany({
       include: {
         questions: { include: { mastery: true } },
@@ -32,6 +34,7 @@ export default async function DashboardPage() {
       orderBy: { answeredAt: "desc" },
       select: { answeredAt: true },
     }),
+    masteryHistoryByTopic(),
   ]);
 
   const endOfToday = new Date();
@@ -56,6 +59,7 @@ export default async function DashboardPage() {
         seen,
         masteryPct,
         due,
+        history: history.get(t.id) ?? null,
       };
     })
     .sort((a, b) => {
@@ -149,10 +153,22 @@ export default async function DashboardPage() {
                     {t.seen}/{t.total} · {Math.round(t.masteryPct)}%
                   </span>
                 </div>
-                <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-primary/10">
-                  <div
-                    className="h-full rounded-full bg-primary transition-[width] duration-500"
-                    style={{ width: `${t.masteryPct}%` }}
+                <div className="mt-2.5 flex items-center gap-3">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-primary/10">
+                    <div
+                      className="h-full rounded-full bg-primary transition-[width] duration-500"
+                      style={{ width: `${t.masteryPct}%` }}
+                    />
+                  </div>
+                  <MasterySparkline
+                    values={
+                      t.history ??
+                      (Array.from({ length: HISTORY_DAYS }, () => null) as (
+                        | number
+                        | null
+                      )[])
+                    }
+                    ariaLabel={`Průměrná známka ${t.nameCs} za posledních ${HISTORY_DAYS} dní`}
                   />
                 </div>
                 {t.due > 0 && (
