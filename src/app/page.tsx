@@ -142,9 +142,9 @@ export default async function DashboardPage() {
                     {t.seen}/{t.total} · {Math.round(t.masteryPct)}%
                   </span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
+                <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-primary/10">
                   <div
-                    className="h-full bg-foreground transition-[width] duration-500"
+                    className="h-full rounded-full bg-primary transition-[width] duration-500"
                     style={{ width: `${t.masteryPct}%` }}
                   />
                 </div>

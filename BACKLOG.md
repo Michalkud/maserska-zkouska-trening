@@ -112,7 +112,7 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `<type>: <finding summary>` where `<type>` is `fix`, `feat`, or `style` as appropriate.
   - If ALL findings are resolved, re-add "first UI testing sweep" above this item and defer this.
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - (Same as above. Loop repeats this item per iteration until findings.md is clear.)
 
 - [ ] **Post-MVP: fix top unresolved UI finding**

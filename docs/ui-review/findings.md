@@ -15,7 +15,7 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 - [x] **P1 [copy]** Page `<title>` is literally `Create Next App` — default Next.js scaffolding metadata never got replaced. Bookmarks, tab text, SEO all wrong. Fix in `app/layout.tsx` (or `app/page.tsx` export const metadata). Screenshot: `01-dashboard.png` (browser tab), same on every page.
 
-- [ ] **P1 [visual]** Topic-mastery progress bars are barely visible — they render as a hairline track (~2 px tall) and the fill is almost invisible at low percentages. The "3 %" / "4 %" fill on Hygiena / Komunikace is a 2-pixel dot. Bars should be at least 6–8 px tall and have a clear track colour. Screenshot: `06-dashboard-return.png`.
+- [x] **P1 [visual]** Topic-mastery progress bars are barely visible — they render as a hairline track (~2 px tall) and the fill is almost invisible at low percentages. The "3 %" / "4 %" fill on Hygiena / Komunikace is a 2-pixel dot. Bars should be at least 6–8 px tall and have a clear track colour. Screenshot: `06-dashboard-return.png`. → Fixed: bumped to `h-2.5` (10 px), tinted track `bg-primary/10`, filled `bg-primary rounded-full`. Verified in `fix-01-progress-bars.png`.
 
 - [ ] **P2 [info-arch]** Topics are listed alphabetically by Czech title. A learner cares first about *weakest* topics or *most due today*. Sort descending by (due count desc, mastery asc) or add sort controls. Screenshot: `01-dashboard.png`.
 
