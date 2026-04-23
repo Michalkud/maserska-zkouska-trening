@@ -33,7 +33,7 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 ## Quiz (`/quiz`)
 
-- [ ] **P1 [interaction]** No progress indicator on the quiz page — user has no idea if they have 5 questions left or 500. Add "Otázka X z Y" or "X k dnešnímu opakování" in the header area (next to the topic name). Screenshot: `02-quiz-question.png`.
+- [x] **P1 [interaction]** No progress indicator on the quiz page — user has no idea if they have 5 questions left or 500. Add "Otázka X z Y" or "X k dnešnímu opakování" in the header area (next to the topic name). Screenshot: `02-quiz-question.png`. → Fixed: `src/app/quiz/page.tsx` computes `dueToday` from the already-fetched `questions` array using the same rule as the dashboard (mastery null OR dueAt ≤ end-of-day local). Scope-aware: when `?topic=…` is set, `questions` is already filtered so the count reflects the scoped topic. Renders as a bordered pill "N k opakování" next to the topic name (mirrors the dashboard topic-row phrasing). Hidden when 0. Screenshot: `docs/ui-review/quiz-progress-2026-04-23/quiz-with-progress.png`.
 
 - [ ] **P1 [interaction]** Submit-and-next flow requires two clicks (Odeslat → Další otázka). On desktop/tablet with keyboard, neither action has a keyboard shortcut. Enter should submit; a clear key (Space / Enter / N) should advance. The post-MVP backlog already has a keyboard-shortcuts item — mark this as the motivating evidence. Screenshot: `03-answer-correct.png`.
 

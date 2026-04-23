@@ -173,9 +173,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `<type>: <finding summary>` where `<type>` is `fix`, `feat`, or `style` as appropriate.
   - Done: `src/app/page.tsx` H2 upgraded `text-sm font-semibold` → `text-lg font-semibold tracking-tight`; `mb-3` → `mb-4` (16 px, 4pt grid). No uppercase treatment was present anymore after the earlier typography pass, but the section header still sat too close to body-text weight — now it reads as a clear level between H1 (text-3xl) and li content (text-base). Screenshots: `docs/ui-review/h2-hierarchy-2026-04-23/`.
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - (Same pattern — next unresolved finding. Next expected: Quiz P1 [interaction] progress indicator — render "Otázka X z Y" or "X k dnešnímu opakování" in the quiz header near the topic pill. Source the denominator from `lib/selector.ts` — due-today count for the (optionally scoped) topic.)
   - Commit: `<type>: <finding summary>`.
+  - Done: `src/app/quiz/page.tsx` computes `dueToday` inline from the already-fetched `questions` array (same predicate the dashboard uses: mastery null OR dueAt ≤ end-of-day local). Scope-aware for free — when `?topic=…` is set, `questions` is already filtered by `topicId`. Header pill shows `N k opakování` next to the topic name (matches dashboard topic-row phrasing). Hidden when 0 to keep the empty-state page clean. tsc + eslint clean; verified via Playwright on `/quiz` (unscoped → "152 k opakování"). Screenshot: `docs/ui-review/quiz-progress-2026-04-23/quiz-with-progress.png`.
 
 - [ ] **Post-MVP: fix top unresolved UI finding**
   - (Same pattern. Next expected: Quiz P2 [visual] — "✓ Správně" / "✗ Špatně" pill is understated for the single most important feedback element. Enlarge it, switch to filled solid badges (primary/destructive tokens), move above the explanation card, add a subtle entrance animation if cheap.)

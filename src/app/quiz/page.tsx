@@ -23,6 +23,12 @@ export default async function QuizPage({
     include: { topic: true, mastery: true },
   });
 
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+  const dueToday = questions.filter(
+    (q) => !q.mastery || q.mastery.dueAt <= endOfToday,
+  ).length;
+
   const candidates: SelectorQuestion[] = questions.map((q) => ({
     id: q.id,
     topicId: q.topicId,
@@ -67,18 +73,23 @@ export default async function QuizPage({
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
-      <div className="mb-8 flex items-center justify-between text-sm text-muted-foreground">
-        <span className="font-medium">
-          {full.topic.nameCs}
+      <div className="mb-8 flex items-center justify-between gap-4 text-sm text-muted-foreground">
+        <span className="flex min-w-0 items-center gap-2 font-medium">
+          <span className="truncate">{full.topic.nameCs}</span>
           {scopedTopic && (
-            <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+            <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
               okruh
+            </span>
+          )}
+          {dueToday > 0 && (
+            <span className="shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium tabular-nums">
+              {dueToday} k opakování
             </span>
           )}
         </span>
         <Link
           href="/"
-          className="underline underline-offset-4 hover:text-foreground"
+          className="shrink-0 underline underline-offset-4 hover:text-foreground"
         >
           Přehled
         </Link>
