@@ -226,35 +226,38 @@ export function QuizForm({
       )}
 
       {graded && (
-        <div className="space-y-4 rounded-lg border bg-muted/40 p-5">
+        <div className="space-y-4">
           <div
-            className={
+            className={[
+              "inline-flex items-center rounded-full px-4 py-1.5 text-lg font-semibold shadow-sm animate-in fade-in slide-in-from-top-1 duration-200",
               graded.correct
-                ? "text-sm font-medium text-green-700"
-                : "text-sm font-medium text-destructive"
-            }
+                ? "bg-green-700 text-white"
+                : "bg-destructive text-white",
+            ].join(" ")}
           >
             {graded.correct ? "✓ Správně" : "✗ Špatně"}
           </div>
-          {kind === "mc" && !graded.correct && (
+          <div className="space-y-4 rounded-lg border bg-muted/40 p-5">
+            {kind === "mc" && !graded.correct && (
+              <div>
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Správná odpověď
+                </div>
+                <p className="mt-1.5 max-w-prose text-sm leading-relaxed">
+                  {correctAnswer}
+                </p>
+              </div>
+            )}
             <div>
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Správná odpověď
+                Vysvětlení
               </div>
               <p className="mt-1.5 max-w-prose text-sm leading-relaxed">
-                {correctAnswer}
+                {explanationCs}
               </p>
             </div>
-          )}
-          <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Vysvětlení
-            </div>
-            <p className="mt-1.5 max-w-prose text-sm leading-relaxed">
-              {explanationCs}
-            </p>
+            <Button onClick={next}>Další otázka →</Button>
           </div>
-          <Button onClick={next}>Další otázka →</Button>
         </div>
       )}
 

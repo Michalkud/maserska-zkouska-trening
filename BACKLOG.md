@@ -178,9 +178,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `<type>: <finding summary>`.
   - Done: `src/app/quiz/page.tsx` computes `dueToday` inline from the already-fetched `questions` array (same predicate the dashboard uses: mastery null OR dueAt ≤ end-of-day local). Scope-aware for free — when `?topic=…` is set, `questions` is already filtered by `topicId`. Header pill shows `N k opakování` next to the topic name (matches dashboard topic-row phrasing). Hidden when 0 to keep the empty-state page clean. tsc + eslint clean; verified via Playwright on `/quiz` (unscoped → "152 k opakování"). Screenshot: `docs/ui-review/quiz-progress-2026-04-23/quiz-with-progress.png`.
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - (Same pattern. Next expected: Quiz P2 [visual] — "✓ Správně" / "✗ Špatně" pill is understated for the single most important feedback element. Enlarge it, switch to filled solid badges (primary/destructive tokens), move above the explanation card, add a subtle entrance animation if cheap.)
   - Commit: `<type>: <finding summary>`.
+  - Done: in `src/app/quiz/quiz-form.tsx`, the grade pill is lifted out of the muted explanation wrapper into its own sibling. Styling: `inline-flex rounded-full px-4 py-1.5 text-lg font-semibold shadow-sm` with solid fills — `bg-green-700 text-white` for ✓ Správně, `bg-destructive text-white` for ✗ Špatně (both clear WCAG AA for white text). Entrance: `animate-in fade-in slide-in-from-top-1 duration-200` from `tw-animate-css` — no JS state needed, fires on mount. I used `bg-green-700` over `primary` for the correct state because the theme's `primary` is monochrome (oklch 0.205 0 0) — a black pill would not read as "positive". Verified via Playwright: MC correct shows the green pill above the explanation card; MC incorrect shows the red pill. tsc + eslint clean. Screenshots: `docs/ui-review/feedback-pill-2026-04-23/`.
 
 - [ ] **Post-MVP: fix top unresolved UI finding**
   - (Same pattern. Next expected: Quiz P2 [copy] — remove the "SPRÁVNÁ ODPOVĚĎ: …" textual duplication in the explanation block; the green outline on the correct radio already conveys it. If the wrong-answer explanation would become too terse, keep a brief "Správná odpověď je zvýrazněna zeleně." pointer instead of re-spelling the answer.)
