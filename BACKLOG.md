@@ -168,9 +168,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
 
 ## Post-MVP — Continuous Improvement Round 2
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - Open `docs/ui-review/findings.md`. Find the first unresolved `- [ ]`. The expected top at the time of this batch is the Dashboard P2 [copy] — "Zvládnutí podle okruhu" header collapses visual hierarchy with stat-card labels; upgrade it to a proper H2 (drop uppercase small-caps treatment, bump weight, add mb tuned to the 4pt grid). Fix it, mark `[x]`, capture before/after screenshots if it's a visual change.
   - Commit: `<type>: <finding summary>` where `<type>` is `fix`, `feat`, or `style` as appropriate.
+  - Done: `src/app/page.tsx` H2 upgraded `text-sm font-semibold` → `text-lg font-semibold tracking-tight`; `mb-3` → `mb-4` (16 px, 4pt grid). No uppercase treatment was present anymore after the earlier typography pass, but the section header still sat too close to body-text weight — now it reads as a clear level between H1 (text-3xl) and li content (text-base). Screenshots: `docs/ui-review/h2-hierarchy-2026-04-23/`.
 
 - [ ] **Post-MVP: fix top unresolved UI finding**
   - (Same pattern — next unresolved finding. Next expected: Quiz P1 [interaction] progress indicator — render "Otázka X z Y" or "X k dnešnímu opakování" in the quiz header near the topic pill. Source the denominator from `lib/selector.ts` — due-today count for the (optionally scoped) topic.)

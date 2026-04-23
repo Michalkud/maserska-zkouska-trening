@@ -142,7 +142,7 @@ export default async function DashboardPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold tracking-tight">
+        <h2 className="mb-4 text-lg font-semibold tracking-tight">
           Zvládnutí podle okruhu
         </h2>
         {topicRows.length === 0 ? (
