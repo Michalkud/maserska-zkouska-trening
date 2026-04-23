@@ -52,9 +52,40 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Link to `/quiz`.
   - Commit: `feat: dashboard`.
 
-- [ ] **Seed remaining curriculum domains**
-  - Meta-task: if `docs/curriculum.md` has N domains and only 1 is seeded, split into N−1 items and add them before this one.
-  - Commit per domain.
+- [ ] **Seed Domain 1 — Client Communication & Booking Management**
+  - Add topic(s) (e.g. `komunikace-s-klientem`, `dokumentace-a-gdpr`) to `prisma/seed.ts` with appropriate weight(s).
+  - Write ~20 multiple-choice questions + ~5 open questions in Czech covering sub-topics 1.x in `docs/curriculum.md` (scheduling, intake/contraindication screening, communication protocols, special populations, GDPR-compliant record-keeping).
+  - Each question needs `explanationCs` and `sourceRef` (cite NSK 69-037-M § Doména 1 and relevant sub-section).
+  - Run `pnpm prisma:seed` (or equivalent) and verify the rows exist.
+  - Commit: `feat: seed domain 1 — client communication`.
+
+- [ ] **Seed Domain 3 — Health & Hygiene Compliance**
+  - Add topic(s) (e.g. `hygiena-a-dezinfekce`, `provozni-standardy`) to `prisma/seed.ts`.
+  - Write ~20 MC + ~5 open questions covering sub-topics 3.1–3.5 (facility sanitation, equipment disinfection, PPE, epidemiologically significant activity compliance, occupational health).
+  - Cite NSK 69-037-M § Doména 3, Vyhláška 306/2012, Zákon 258/2000 Sb. in `sourceRef`.
+  - Run seed and verify.
+  - Commit: `feat: seed domain 3 — hygiene & compliance`.
+
+- [ ] **Seed Domain 4 — Massage Performance (Reconditioning & Sports)**
+  - Add topic(s) (e.g. `masazni-techniky`, `masaz-hornich-koncetin`, `masaz-dolnich-koncetin`, `masaz-trupu-a-zad`, `masaz-hlavy-a-krku`) to `prisma/seed.ts`.
+  - Write ~25 MC + ~5 open questions covering sub-topics 4.1–4.8 (upper/lower extremity, trunk, neck/head, techniques/modalities, sequence, special populations, client feedback).
+  - Cite NSK 69-037-M § Doména 4 in `sourceRef`.
+  - Run seed and verify.
+  - Commit: `feat: seed domain 4 — massage performance`.
+
+- [ ] **Seed Domain 5 — First Aid & Emergency Response**
+  - Add topic(s) (e.g. `prvni-pomoc`, `resuscitace`) to `prisma/seed.ts`.
+  - Write ~20 MC + ~5 open questions covering sub-topics 5.1–5.5 (CPR/AED/Heimlich, loss of consciousness & shock, injury assessment, emergency communication, common medical emergencies incl. FAST stroke check).
+  - Cite NSK 69-037-M § Doména 5 and Zákon 372/2011 where relevant.
+  - Run seed and verify.
+  - Commit: `feat: seed domain 5 — first aid`.
+
+- [ ] **Seed Domain 6 — Business Operations & Compliance**
+  - Add topic(s) (e.g. `zivnostenske-pravo`, `dane-a-ucetnictvi`, `gdpr-a-klientska-data`, `pojisteni`) to `prisma/seed.ts`.
+  - Write ~20 MC + ~5 open questions covering sub-topics 6.1–6.8 (trade registration, pricing, tax compliance, GDPR, client database, insurance/liability, HR, CPD).
+  - Cite NSK 69-037-M § Doména 6, Zákon 455/1991 Sb., Nařízení EU 679/2016 in `sourceRef`.
+  - Run seed and verify.
+  - Commit: `feat: seed domain 6 — business operations`.
 
 ---
 
