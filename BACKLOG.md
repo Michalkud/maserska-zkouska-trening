@@ -47,7 +47,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Show correct answer + explanation after submit.
   - Commit: `feat: quiz page + attempt logging`.
 
-- [ ] **Progress dashboard**
+- [x] **Progress dashboard**
   - `app/page.tsx` — per-topic mastery bar, total due today, streak count.
   - Link to `/quiz`.
   - Commit: `feat: dashboard`.
