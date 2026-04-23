@@ -118,10 +118,11 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
 - [x] **Post-MVP: fix top unresolved UI finding**
   - (Same as above.)
 
-- [ ] **Post-MVP: design polish — typography + spacing pass**
+- [x] **Post-MVP: design polish — typography + spacing pass**
   - Review quiz page and dashboard for readability (Czech diacritics, line length 60–80ch, heading hierarchy). Tighten spacing using Tailwind's 4pt grid. Don't redesign — refine.
   - Screenshots before + after in `docs/ui-review/design-polish-YYYY-MM-DD/`.
   - Commit: `style: typography + spacing polish`.
+  - Done: dashboard header mb-8 (was mb-10); "Zvládnutí podle okruhu" upgraded from uppercase-tiny to text-sm font-semibold (proper H2 hierarchy); topic rows tightened (px-4 py-3, space-y-2, h-2 progress) with topic name bumped to text-base font-medium for primary content legibility. Quiz H1 stem upgraded to text-2xl leading-snug text-balance with max-w-prose (was text-xl leading-relaxed — headings shouldn't use body line-height); MC choice text bumped text-sm → text-base for Czech diacritics readability; prose blocks constrained to max-w-prose. Verified: tsc --noEmit clean. Screenshots: `docs/ui-review/design-polish-2026-04-23/`.
 
 - [ ] **Post-MVP: design polish — colour + contrast pass**
   - Audit WCAG AA contrast on every text / button / badge via `mcp__browsertools__runAccessibilityAudit` (if available) or manual contrast ratios. Shift shadcn tokens as needed. Preserve the shadcn semantic palette (primary/accent/destructive).

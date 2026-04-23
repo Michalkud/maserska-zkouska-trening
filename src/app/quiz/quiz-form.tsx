@@ -72,7 +72,7 @@ export function QuizForm({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold leading-relaxed tracking-tight">
+      <h1 className="max-w-prose text-2xl font-semibold leading-snug tracking-tight text-balance">
         {stemCs}
       </h1>
 
@@ -91,7 +91,7 @@ export function QuizForm({
               <label
                 key={c}
                 className={[
-                  "flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors",
+                  "flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-colors",
                   !showResult && isSelected ? "border-primary bg-muted" : "",
                   isCorrect ? "border-green-600 bg-green-50" : "",
                   isWrongChoice ? "border-destructive bg-destructive/10" : "",
@@ -104,9 +104,9 @@ export function QuizForm({
                   value={c}
                   checked={isSelected}
                   onChange={(e) => setAnswer(e.target.value)}
-                  className="mt-1"
+                  className="mt-1.5"
                 />
-                <span className="text-sm leading-relaxed">{c}</span>
+                <span className="text-base leading-relaxed">{c}</span>
               </label>
             );
           })}
@@ -144,7 +144,9 @@ export function QuizForm({
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Správná odpověď
             </div>
-            <p className="mt-1 text-sm leading-relaxed">{correctAnswer}</p>
+            <p className="mt-1.5 max-w-prose text-sm leading-relaxed">
+              {correctAnswer}
+            </p>
           </div>
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
@@ -181,7 +183,7 @@ export function QuizForm({
       )}
 
       {graded && (
-        <div className="space-y-4 rounded-lg border bg-muted/40 p-4">
+        <div className="space-y-4 rounded-lg border bg-muted/40 p-5">
           <div
             className={
               graded.correct
@@ -196,14 +198,18 @@ export function QuizForm({
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Správná odpověď
               </div>
-              <p className="mt-1 text-sm leading-relaxed">{correctAnswer}</p>
+              <p className="mt-1.5 max-w-prose text-sm leading-relaxed">
+                {correctAnswer}
+              </p>
             </div>
           )}
           <div>
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Vysvětlení
             </div>
-            <p className="mt-1 text-sm leading-relaxed">{explanationCs}</p>
+            <p className="mt-1.5 max-w-prose text-sm leading-relaxed">
+              {explanationCs}
+            </p>
           </div>
           <Button onClick={next}>Další otázka →</Button>
         </div>

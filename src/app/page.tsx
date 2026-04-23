@@ -80,12 +80,12 @@ export default async function DashboardPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-12">
-      <header className="mb-10 flex flex-wrap items-start justify-between gap-4">
-        <div>
+      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-prose">
           <h1 className="text-3xl font-semibold tracking-tight">
             Masérská zkouška
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Adaptivní trénink na profesní kvalifikaci NSK 69-037-M.
           </p>
         </div>
@@ -97,7 +97,7 @@ export default async function DashboardPage() {
         </Link>
       </header>
 
-      <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <section className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-lg border bg-card p-5">
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             K opakování dnes
@@ -130,7 +130,7 @@ export default async function DashboardPage() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <h2 className="mb-3 text-sm font-semibold tracking-tight">
           Zvládnutí podle okruhu
         </h2>
         {topicRows.length === 0 ? (
@@ -138,23 +138,25 @@ export default async function DashboardPage() {
             Zatím nejsou nasazené žádné okruhy.
           </p>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-2">
             {topicRows.map((t) => (
-              <li key={t.id} className="rounded-lg border bg-card p-4">
+              <li key={t.id} className="rounded-lg border bg-card px-4 py-3">
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-sm font-medium">{t.nameCs}</span>
+                  <span className="text-base font-medium tracking-tight">
+                    {t.nameCs}
+                  </span>
                   <span className="text-xs text-muted-foreground tabular-nums">
                     {t.seen}/{t.total} · {Math.round(t.masteryPct)}%
                   </span>
                 </div>
-                <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-primary/10">
+                <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-primary/10">
                   <div
                     className="h-full rounded-full bg-primary transition-[width] duration-500"
                     style={{ width: `${t.masteryPct}%` }}
                   />
                 </div>
                 {t.due > 0 && (
-                  <div className="mt-2 text-xs text-muted-foreground">
+                  <div className="mt-1.5 text-xs text-muted-foreground">
                     {t.due} k opakování
                   </div>
                 )}

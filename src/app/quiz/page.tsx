@@ -47,9 +47,12 @@ export default async function QuizPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
-      <div className="mb-6 flex items-center justify-between text-sm text-muted-foreground">
-        <span>{full.topic.nameCs}</span>
-        <Link href="/" className="underline underline-offset-4">
+      <div className="mb-8 flex items-center justify-between text-sm text-muted-foreground">
+        <span className="font-medium">{full.topic.nameCs}</span>
+        <Link
+          href="/"
+          className="underline underline-offset-4 hover:text-foreground"
+        >
           Přehled
         </Link>
       </div>
