@@ -10,6 +10,23 @@ MAX_LOG_BYTES=$((5 * 1024 * 1024))  # rotate at 5 MB
 
 cd "$REPO" || { echo "$(date -Iseconds) runner: cannot cd to $REPO" >> "$LOG"; exit 0; }
 
+# Prevent concurrent runs. `mkdir` is atomic on macOS; first wins.
+LOCK="$REPO/scripts/.loop-runner.lock"
+if ! mkdir "$LOCK" 2>/dev/null; then
+  # Check for stale lock (owner PID dead).
+  OLD_PID="$(cat "$LOCK/pid" 2>/dev/null || echo 0)"
+  if [ "$OLD_PID" -gt 0 ] && ! kill -0 "$OLD_PID" 2>/dev/null; then
+    echo "$(date -Iseconds) runner: stale lock from PID $OLD_PID, removing" >> "$LOG"
+    rm -rf "$LOCK"
+    mkdir "$LOCK" || { echo "$(date -Iseconds) runner: lock retake failed" >> "$LOG"; exit 0; }
+  else
+    echo "$(date -Iseconds) runner: another iteration is running (PID $OLD_PID), skipping" >> "$LOG"
+    exit 0
+  fi
+fi
+echo $$ > "$LOCK/pid"
+trap 'rm -rf "$LOCK" 2>/dev/null || true' EXIT
+
 # Rotate log if large.
 if [ -f "$LOG" ] && [ "$(stat -f%z "$LOG" 2>/dev/null || echo 0)" -gt "$MAX_LOG_BYTES" ]; then
   mv "$LOG" "$LOG.1"

@@ -1,6 +1,7 @@
 # Loop artifacts
 scripts/loop.log
 scripts/loop.log.*
+scripts/.loop-runner.lock/
 
 # Claude Code
 .claude/stats-cache.json
