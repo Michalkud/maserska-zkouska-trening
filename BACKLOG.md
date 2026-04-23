@@ -73,7 +73,7 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
   - Run seed and verify.
   - Commit: `feat: seed domain 4 — massage performance`.
 
-- [ ] **Seed Domain 5 — First Aid & Emergency Response**
+- [x] **Seed Domain 5 — First Aid & Emergency Response**
   - Add topic(s) (e.g. `prvni-pomoc`, `resuscitace`) to `prisma/seed.ts`.
   - Write ~20 MC + ~5 open questions covering sub-topics 5.1–5.5 (CPR/AED/Heimlich, loss of consciousness & shock, injury assessment, emergency communication, common medical emergencies incl. FAST stroke check).
   - Cite NSK 69-037-M § Doména 5 and Zákon 372/2011 where relevant.
