@@ -11,12 +11,28 @@ MAX_LOG_BYTES=$((5 * 1024 * 1024))  # rotate at 5 MB
 cd "$REPO" || { echo "$(date -Iseconds) runner: cannot cd to $REPO" >> "$LOG"; exit 0; }
 
 # Prevent concurrent runs. `mkdir` is atomic on macOS; first wins.
+# Lock is stale if (a) owner PID dead, or (b) lock older than MAX_ITER_MIN —
+# the second case handles claude-p hangs (e.g. rate-limit with overage disabled
+# leaves the HTTPS request open indefinitely; PID is alive but useless).
 LOCK="$REPO/scripts/.loop-runner.lock"
+MAX_ITER_MIN=45
 if ! mkdir "$LOCK" 2>/dev/null; then
-  # Check for stale lock (owner PID dead).
   OLD_PID="$(cat "$LOCK/pid" 2>/dev/null || echo 0)"
+  STALE=""
   if [ "$OLD_PID" -gt 0 ] && ! kill -0 "$OLD_PID" 2>/dev/null; then
-    echo "$(date -Iseconds) runner: stale lock from PID $OLD_PID, removing" >> "$LOG"
+    STALE="PID $OLD_PID is dead"
+  elif [ -n "$(find "$LOCK" -maxdepth 0 -mmin +$MAX_ITER_MIN 2>/dev/null)" ]; then
+    STALE="lock older than $MAX_ITER_MIN min"
+    if [ "$OLD_PID" -gt 0 ]; then
+      # Kill the hung process and its descendants.
+      pkill -TERM -P "$OLD_PID" 2>/dev/null || true
+      kill -TERM "$OLD_PID" 2>/dev/null || true
+      sleep 2
+      kill -KILL "$OLD_PID" 2>/dev/null || true
+    fi
+  fi
+  if [ -n "$STALE" ]; then
+    echo "$(date -Iseconds) runner: stale lock ($STALE), taking over" >> "$LOG"
     rm -rf "$LOCK"
     mkdir "$LOCK" || { echo "$(date -Iseconds) runner: lock retake failed" >> "$LOG"; exit 0; }
   else
@@ -43,6 +59,22 @@ fi
 STAMP="$(date -Iseconds)"
 echo "" >> "$LOG"
 echo "=== $STAMP loop-next start ===" >> "$LOG"
+
+# Watchdog: if this iteration runs longer than MAX_ITER_SEC, terminate claude.
+# Covers rate-limit hangs where the HTTPS request never returns.
+# Stale-lock check above is the fail-safe if the watchdog itself fails.
+MAX_ITER_SEC=$((30 * 60))
+RUNNER_PID=$$
+(
+  sleep "$MAX_ITER_SEC"
+  echo "$(date -Iseconds) runner: watchdog firing — iteration exceeded ${MAX_ITER_SEC}s" >> "$LOG"
+  pkill -TERM -P "$RUNNER_PID" claude 2>/dev/null || true
+  sleep 10
+  pkill -KILL -P "$RUNNER_PID" claude 2>/dev/null || true
+) &
+WATCHDOG_PID=$!
+disown "$WATCHDOG_PID" 2>/dev/null || true
+trap 'kill "$WATCHDOG_PID" 2>/dev/null; rm -rf "$LOCK" 2>/dev/null || true' EXIT
 
 # Stream stdout+stderr live via tee so `tail -f loop.log` shows progress during the run.
 # --verbose --output-format stream-json emits JSON events for each assistant turn, tool use, and tool result.
