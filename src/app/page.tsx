@@ -3,15 +3,9 @@ import { buttonVariants } from "@/components/ui/button";
 import { MasterySparkline } from "@/components/mastery-sparkline";
 import { prisma } from "@/lib/db";
 import { HISTORY_DAYS, masteryHistoryByTopic } from "@/lib/mastery-history";
+import { calculateStreak } from "@/lib/streak";
 
 export const dynamic = "force-dynamic";
-
-function localDayKey(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
 
 function normalizeEase(ease: number): number {
   return Math.max(0, Math.min(1, (ease - 1.3) / (3.0 - 1.3)));
@@ -71,16 +65,7 @@ export default async function DashboardPage() {
   const totalDue = topicRows.reduce((s, t) => s + t.due, 0);
   const totalQuestions = topicRows.reduce((s, t) => s + t.total, 0);
 
-  const daySet = new Set(attempts.map((a) => localDayKey(a.answeredAt)));
-  let streak = 0;
-  const cursor = new Date();
-  if (!daySet.has(localDayKey(cursor))) {
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  while (daySet.has(localDayKey(cursor))) {
-    streak++;
-    cursor.setDate(cursor.getDate() - 1);
-  }
+  const streak = calculateStreak(attempts.map((a) => a.answeredAt));
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-12">
