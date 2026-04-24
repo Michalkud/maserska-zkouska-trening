@@ -79,7 +79,7 @@ export function ReviewView({ items }: Props) {
               <p className="max-w-prose text-base font-medium leading-snug tracking-tight text-balance">
                 {m.stemCs}
               </p>
-              <div className="mt-3 rounded-md border border-green-700/40 bg-green-50 px-3 py-2">
+              <div className="mt-3 rounded-md border border-green-700/40 bg-green-50 px-3 py-2 dark:border-green-500/40 dark:bg-green-950/40">
                 <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Správná odpověď
                 </div>

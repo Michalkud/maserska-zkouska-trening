@@ -204,7 +204,9 @@ export function QuizForm({
                 className={[
                   "flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-colors",
                   !showResult && isSelected ? "border-primary bg-muted" : "",
-                  isCorrect ? "border-green-700 bg-green-50" : "",
+                  isCorrect
+                    ? "border-green-700 bg-green-50 dark:border-green-500 dark:bg-green-950/40"
+                    : "",
                   isWrongChoice ? "border-destructive bg-destructive/10" : "",
                   showResult ? "cursor-default" : "hover:bg-muted/60",
                 ].join(" ")}
@@ -315,7 +317,7 @@ export function QuizForm({
             className={[
               "inline-flex items-center rounded-full px-4 py-1.5 text-lg font-semibold shadow-sm animate-in fade-in slide-in-from-top-1 duration-200",
               graded.correct
-                ? "bg-green-700 text-white"
+                ? "bg-green-700 text-white dark:bg-green-600"
                 : "bg-destructive text-white",
             ].join(" ")}
           >

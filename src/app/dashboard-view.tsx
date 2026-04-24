@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { MasterySparkline } from "@/components/mastery-sparkline";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { HISTORY_DAYS } from "@/lib/storage/types";
 import type { AggregateCounts, TopicSummary } from "@/lib/storage/types";
 
@@ -43,6 +44,7 @@ export function DashboardView({ topics, streak, counts }: Props) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <ThemeToggle />
           <Link
             href="/review"
             className={buttonVariants({ variant: "outline", size: "lg" })}
