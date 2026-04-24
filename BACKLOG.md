@@ -6,7 +6,39 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
 
 ---
 
-## Top priority — localStorage / server-less build (split before executing)
+## Top priority — import Michal's practice-test question bank
+
+Michal dropped an official practice-exam scan into `docs/sources/cviceni-testy-2026-04-23/`:
+- **`test-anatomie-a-prvni-pomoc.pdf`** (16 pages): two anatomy tests (A, B — 80 questions each) and two first-aid tests (A, B — 30 questions each). Anatomy questions have 3 choices (a/b/c). First-aid questions have 4 choices (a/b/c/d).
+- **`odpovedi-anatomie-strana-1-ze-3.png`** — answer key page 1/3, covers Anatomy Test A (questions 1–80).
+- **`odpovedi-anatomie-strana-2-ze-3.png`** — answer key page 2/3, covers Anatomy Test B (header "2/A"; questions 1–80).
+- **Missing**: page 3/3 of the answer keys, which would cover First Aid A + B.
+
+Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read` on the PNGs. For every question added to `src/data/question-bank.ts`, follow the existing row shape (kind, stemCs, choices JSON, correctAnswer, explanationCs, sourceRef). **Never hallucinate an answer.** If unsure, insert as `[BLOCKED: needs michal]` rather than guesswork.
+
+- [ ] **Import Anatomy Test A (80 questions) — validate + insert**
+  - Read `docs/sources/cviceni-testy-2026-04-23/test-anatomie-a-prvni-pomoc.pdf` pages 1–5 and answer key `odpovedi-anatomie-strana-1-ze-3.png`.
+  - For each of 80 questions: transcribe stem + 3 choices verbatim in Czech. Mark the correct answer from the key. Deduplicate against `src/data/question-bank.ts` — a question is a duplicate if its stem overlaps >80% with an existing row under the `anatomie` topic. For duplicates, leave existing row alone unless the official wording is more canonical. For new rows: `kind: "mc"`, `sourceRef: "Zkušební test Anatomie A (practice exam scan 2026-04-23, q<N>)"`, one-sentence Czech `explanationCs`.
+  - Verify: `pnpm db:seed` idempotent, `pnpm exec vitest run` stays green, `pnpm build` clean.
+  - Commit: `feat: import 80 anatomy questions from practice test A`.
+
+- [ ] **Import Anatomy Test B (80 questions) — validate + insert**
+  - PDF pages 6–10 + answer key `odpovedi-anatomie-strana-2-ze-3.png`. Most of Test B overlaps with Test A — be aggressive on dedup. New rows get `sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q<N>)"`.
+  - Commit: `feat: import delta anatomy questions from practice test B`.
+
+- [ ] **First Aid Tests A + B (60 questions) — plan schema change first**
+  - PDF pages 11–16. First-aid uses 4-choice questions (a/b/c/d) — a format the bank currently doesn't support.
+  - **Do not guess answers.** The first-aid answer key (page 3/3) was not provided.
+  - Iteration 1: design-only. Decide how to extend `Question` type + seed to carry 4 choices + nullable `correctAnswer`. Write it up in `docs/decisions/003-4-choice-questions.md`. Split the rest into concrete follow-ups. Insert a `[BLOCKED: needs michal]` item at top asking for the missing answer-key page.
+  - Commit: `docs: ADR 003 — 4-choice + unanswered-question support`.
+
+- [ ] **Push → Pages auto-deploys updated bundle**
+  - The `pages.yml` workflow rebuilds static on every main push. After the two anatomy imports land, verify `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new question count on the dashboard.
+  - No separate commit — fold into the last import.
+
+---
+
+## localStorage / server-less build (split before executing)
 
 Michal wants the app to run with zero server, persisting attempts + mastery in `localStorage`. Ship both modes from the same codebase. **This block belongs at the top — do it before the remaining Post-MVP items.** First iteration that sees this must split it into the sub-items below if they're not already broken out.
 
