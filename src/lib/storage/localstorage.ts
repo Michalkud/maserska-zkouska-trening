@@ -6,6 +6,7 @@ import {
   AggregateCounts,
   AttemptInput,
   AttemptOutcome,
+  FlagInput,
   HISTORY_DAYS,
   MasteryState,
   MistakeEntry,
@@ -19,6 +20,7 @@ import {
 const DAY_MS = 86_400_000;
 const ATTEMPTS_KEY = "mz.attempts";
 const MASTERY_KEY = "mz.mastery";
+const FLAGS_KEY = "mz.flags";
 
 type StoredAttempt = {
   questionId: string;
@@ -35,6 +37,12 @@ type StoredMasteryRec = {
 };
 
 type StoredMastery = Record<string, StoredMasteryRec>;
+
+type StoredFlag = {
+  questionId: string;
+  reason?: string;
+  at: string;
+};
 
 type StaticQuestion = Omit<QuestionWithContext, "mastery">;
 
@@ -283,5 +291,16 @@ export const localStorageStorage: Storage = {
           topicNameCs: q ? q.topic.nameCs : "",
         };
       });
+  },
+
+  async flagQuestion(input: FlagInput): Promise<void> {
+    const raw = ls().getItem(FLAGS_KEY);
+    const flags = raw ? (JSON.parse(raw) as StoredFlag[]) : [];
+    flags.push({
+      questionId: input.questionId,
+      reason: input.reason?.trim() || undefined,
+      at: new Date().toISOString(),
+    });
+    ls().setItem(FLAGS_KEY, JSON.stringify(flags));
   },
 };

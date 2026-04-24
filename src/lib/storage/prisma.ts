@@ -6,6 +6,7 @@ import {
   AggregateCounts,
   AttemptInput,
   AttemptOutcome,
+  FlagInput,
   HISTORY_DAYS,
   MistakeEntry,
   QuestionKind,
@@ -268,5 +269,14 @@ export const prismaStorage: Storage = {
       correct: a.correct,
       topicNameCs: a.question.topic.nameCs,
     }));
+  },
+
+  async flagQuestion(input: FlagInput): Promise<void> {
+    await prisma.questionFlag.create({
+      data: {
+        questionId: input.questionId,
+        reason: input.reason?.trim() ? input.reason.trim() : null,
+      },
+    });
   },
 };

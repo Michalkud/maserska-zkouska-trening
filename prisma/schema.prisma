@@ -52,3 +52,12 @@ model MasteryScore {
   repetitions Int      @default(0)
   dueAt       DateTime @default(now())
 }
+
+model QuestionFlag {
+  id         String   @id @default(cuid())
+  questionId String
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  @@index([questionId])
+}

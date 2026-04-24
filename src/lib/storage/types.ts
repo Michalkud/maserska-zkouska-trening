@@ -70,6 +70,11 @@ export interface AggregateCounts {
   totalDue: number;
 }
 
+export interface FlagInput {
+  questionId: string;
+  reason?: string;
+}
+
 export interface Storage {
   listTopics(): Promise<Topic[]>;
   listQuestions(opts?: { topicId?: string }): Promise<QuestionWithContext[]>;
@@ -87,4 +92,5 @@ export interface Storage {
     sinceMs: number;
     limit?: number;
   }): Promise<RecentAttemptWithTopic[]>;
+  flagQuestion(input: FlagInput): Promise<void>;
 }

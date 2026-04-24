@@ -34,6 +34,12 @@ export function QuizForm({
   const [graded, setGraded] = useState<{ correct: boolean } | null>(null);
   const [pending, setPending] = useState<"mc" | 1 | 3 | 4 | 5 | null>(null);
   const submitting = pending !== null;
+  const [flag, setFlag] = useState<{
+    open: boolean;
+    reason: string;
+    submitting: boolean;
+    done: boolean;
+  }>({ open: false, reason: "", submitting: false, done: false });
 
   useEffect(() => {
     startRef.current = Date.now();
@@ -151,6 +157,28 @@ export function QuizForm({
     setAnswer("");
     setRevealed(false);
     setGraded(null);
+    setFlag({ open: false, reason: "", submitting: false, done: false });
+  }
+
+  async function submitFlag() {
+    setFlag((f) => ({ ...f, submitting: true }));
+    try {
+      if (USE_LOCAL_STORAGE) {
+        await localStorageStorage.flagQuestion({
+          questionId,
+          reason: flag.reason,
+        });
+      } else {
+        await fetch("/api/flag", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ questionId, reason: flag.reason }),
+        });
+      }
+      setFlag({ open: false, reason: "", submitting: false, done: true });
+    } catch {
+      setFlag((f) => ({ ...f, submitting: false }));
+    }
   }
 
   return (
@@ -304,6 +332,20 @@ export function QuizForm({
             </div>
             <Button onClick={next}>Další otázka →</Button>
           </div>
+          <FlagWidget
+            state={flag}
+            onOpen={() => setFlag((f) => ({ ...f, open: true }))}
+            onCancel={() =>
+              setFlag({
+                open: false,
+                reason: "",
+                submitting: false,
+                done: false,
+              })
+            }
+            onChangeReason={(reason) => setFlag((f) => ({ ...f, reason }))}
+            onSubmit={submitFlag}
+          />
         </div>
       )}
 
@@ -331,6 +373,73 @@ function PendingLabel({
         </span>
       )}
     </>
+  );
+}
+
+function FlagWidget({
+  state,
+  onOpen,
+  onCancel,
+  onChangeReason,
+  onSubmit,
+}: {
+  state: { open: boolean; reason: string; submitting: boolean; done: boolean };
+  onOpen: () => void;
+  onCancel: () => void;
+  onChangeReason: (reason: string) => void;
+  onSubmit: () => void;
+}) {
+  if (state.done) {
+    return (
+      <p className="text-xs text-muted-foreground">
+        Díky, nahlášení jsme zaznamenali.
+      </p>
+    );
+  }
+  if (!state.open) {
+    return (
+      <button
+        type="button"
+        onClick={onOpen}
+        className="text-xs text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
+      >
+        Nahlásit otázku
+      </button>
+    );
+  }
+  return (
+    <div className="space-y-2 rounded-lg border border-dashed p-4">
+      <label className="text-xs font-medium text-muted-foreground">
+        Co je špatně? <span className="font-normal">(nepovinné)</span>
+      </label>
+      <textarea
+        value={state.reason}
+        onChange={(e) => onChangeReason(e.target.value)}
+        disabled={state.submitting}
+        rows={3}
+        placeholder="Např. chybná odpověď, překlep, nejasné znění…"
+        className="w-full rounded-md border bg-background p-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-60"
+      />
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          onClick={onSubmit}
+          disabled={state.submitting}
+          aria-busy={state.submitting}
+          className="relative"
+        >
+          <PendingLabel active={state.submitting}>Odeslat hlášení</PendingLabel>
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onCancel}
+          disabled={state.submitting}
+        >
+          Zrušit
+        </Button>
+      </div>
+    </div>
   );
 }
 
