@@ -57,7 +57,7 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 ## Cross-cutting
 
-- [ ] **P2 [a11y]** No `html[lang="cs"]` check performed — verify `app/layout.tsx` sets `lang="cs"` on `<html>`. Screen readers need it for Czech pronunciation.
+- [x] **P2 [a11y]** No `html[lang="cs"]` check performed — verify `app/layout.tsx` sets `lang="cs"` on `<html>`. Screen readers need it for Czech pronunciation. → Fixed: `src/app/layout.tsx:31` flipped `lang="en"` → `lang="cs"`. Verified via `curl http://localhost:3000/` — response contains `<html lang="cs" …>`.
 
 - [x] **P2 [performance]** No skeleton or loading state during the POST `/api/attempt` round-trip; button just … disables. Add optimistic feedback. Screenshot: not captured (fast enough on localhost). → Fixed: `quiz-form.tsx` swapped `submitting: boolean` for `pending: "mc" | 1 | 3 | 4 | 5 | null` so only the clicked button shows the spinner. Each submit-path button wraps its label in a `<PendingLabel>` that keeps the text in flow but `invisible` when active and overlays an absolutely-positioned `animate-spin` ring — preserves the button's visual footprint, no layout shift. `aria-busy` toggled on the active button. Round-trip is <100 ms on localhost so unseen in normal use; verified graceful degradation by throttling `/attempt` fetch to 15 s via Playwright and screenshotting the spinner on the "Odeslat" button. Screenshot: `docs/ui-review/pending-state-2026-04-24/quiz-pending-spinner.png`.
 

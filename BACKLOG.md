@@ -278,9 +278,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `<type>: <finding summary>`.
   - Done: deleted `src/app/favicon.ico` (default Next.js template asset) and added `src/app/icon.svg` — a 32×32 viewBox SVG rendering "MZ" in semibold white (`#fafafa`) on a neutral-900 (`#262626`) rounded square, matching the app's monochrome token palette. SVG over ICO per the spec's "SVG preferred so it scales" — Next's file-based metadata picks it up via App Router's `icon` convention and emits `<link rel="icon" type="image/svg+xml" href="/icon.svg?…">` on every route. Verified via `curl`: all three routes (`/`, `/quiz`, `/review`) serve the same `<link rel="icon" …>` tag and `/icon.svg` returns HTTP 200 with `Content-Type: image/svg+xml` (315 B). Asset copy preserved at `docs/ui-review/favicon-2026-04-24/icon.svg` for historical reference. Marked the Dashboard P3 [info-arch] finding `[x]` in `docs/ui-review/findings.md` with the same evidence.
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - Next expected: Cross-cutting P2 [a11y] "No `html[lang="cs"]` check — verify `app/layout.tsx` sets `lang='cs'`." Confirmed bug: `src/app/layout.tsx:31` currently has `lang="en"`. Flip it to `"cs"` so Czech pronunciation works in screen readers. Verify via DOM inspection on `/` and mark the finding `[x]`.
   - Commit: `<type>: <finding summary>`.
+  - Done: `src/app/layout.tsx:31` flipped `lang="en"` → `lang="cs"`. Verified via `curl http://localhost:3000/ | grep '<html'` → `<html lang="cs" class="…">`. Marked the Cross-cutting P2 [a11y] finding `[x]` in `docs/ui-review/findings.md` with the same evidence.
 
 - [ ] **Post-MVP: fix top unresolved UI finding**
   - Next expected: Quiz P2 [visual] "Disabled `Odeslat` button is gray-on-white with very low contrast; reads as disabled and absent." Audit the shadcn `Button` disabled tokens for the default variant. Either bump the disabled background to `bg-muted` with `text-muted-foreground` at a legible weight, or keep the primary fill at a reduced opacity (e.g. `disabled:opacity-60`) so the shape stays identifiable. Target WCAG 1.4.11 non-text contrast 3:1 against the page. Verify both MC pre-selection and open-answer pre-input states. Mark the finding `[x]`.
