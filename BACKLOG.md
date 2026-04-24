@@ -6,6 +6,44 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
 
 ---
 
+## Top priority — localStorage / server-less build (split before executing)
+
+Michal wants the app to run with zero server, persisting attempts + mastery in `localStorage`. Ship both modes from the same codebase. **This block belongs at the top — do it before the remaining Post-MVP items.** First iteration that sees this must split it into the sub-items below if they're not already broken out.
+
+- [ ] **Storage abstraction: extract persistence to a pluggable layer**
+  - Define `src/lib/storage/types.ts` with one `Storage` interface: `listTopics()`, `listQuestions({topicId?})`, `getNextDueQuestion()`, `recordAttempt({questionId, grade, responseTimeMs})`, `getMasteryByTopic()`, `getRecentMistakes(n)`, `getStreakDays()`, `getAggregateCounts()`.
+  - Implement `src/lib/storage/prisma.ts` wrapping the existing Prisma calls — refactor `src/app/*` server components / routes to go through this instead of importing `@/lib/db` directly.
+  - All existing tests + build pass unchanged.
+  - Commit: `refactor: extract Storage interface (prisma impl)`.
+
+- [ ] **Bundle question bank as static JSON for client use**
+  - Add `prisma/seed.ts`'s topic + question data into an exported const (or JSON emitted at build time) at `src/data/question-bank.ts`. Same source of truth for `seed.ts` and client bundle — `seed.ts` imports from `question-bank.ts` instead of embedding literals.
+  - Verify the reseed still produces identical DB rows (`pnpm db:seed` idempotent check).
+  - Commit: `refactor: question bank as shared static data`.
+
+- [ ] **localStorage Storage implementation**
+  - `src/lib/storage/localstorage.ts` implementing the full `Storage` interface. Keys: `mz.attempts` (array of {questionId, at, grade, responseTimeMs}), `mz.mastery` (record of questionId → {ease, interval, repetitions, dueAt}). Read-only topics/questions from the bundled `question-bank.ts`.
+  - Unit tests with `happy-dom` or `jsdom` + vitest to validate the localStorage flow end-to-end mirrors the Prisma flow.
+  - Commit: `feat: localStorage Storage impl + tests`.
+
+- [ ] **Runtime switch + client components for static mode**
+  - `src/lib/storage/index.ts` picks impl based on `process.env.NEXT_PUBLIC_STORAGE || "prisma"`. In the static build, it picks `localstorage`. Because server components can't read localStorage, convert `app/page.tsx` + `app/quiz/page.tsx` + `app/mistakes/page.tsx` to client-rendered variants (`"use client"` + `useEffect` to load).
+  - Dev server still runs the Prisma server-side variant. Static export uses localStorage variant.
+  - Commit: `feat: runtime storage switch + client render for static mode`.
+
+- [ ] **Build pipeline: static export target**
+  - `package.json` add script `build:static` that sets `NEXT_PUBLIC_STORAGE=localstorage` and runs `next build` with `output: 'export'` configured. Output goes to `out/`. `scripts/dev:static` serves `out/` via `python3 -m http.server 3001` for smoke test.
+  - Add `docs/decisions/002-dual-mode.md` explaining server vs static build, how to switch, tradeoffs.
+  - Commit: `feat: static export build target + ADR 002`.
+
+- [ ] **Verify static build end-to-end via Playwright**
+  - Run `pnpm build:static && pnpm dev:static &` (backgrounded). Use Playwright MCP to hit `http://localhost:3001`, take the same screenshots we took in the UI sweep, verify: all 6 topics load, a question can be answered, mastery persists after reload, mistake page lists recently-missed questions. Save screenshots to `docs/ui-review/static-2026-04-24/`. Add any issues to `docs/ui-review/findings.md` prefixed `[static]`.
+  - Commit: `test: verify static/localStorage build end-to-end`.
+
+---
+
+## MVP + original continuous improvement
+
 - [x] **Research Czech masér qualification exam structure**
   - Fetch primary sources: hodnotící standard NSK 69-037-M (Národní soustava kvalifikací), zákon č. 455/1991 Sb. (živnostenský zákon, příloha 2, vázané živnosti — masérské, rekondiční a regenerační služby), relevant prováděcí vyhlášky for hygiene/first-aid requirements.
   - Save raw PDFs / HTML dumps to `docs/sources/` with filenames reflecting the source.
