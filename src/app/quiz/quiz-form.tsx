@@ -26,7 +26,8 @@ export function QuizForm({
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
   const [graded, setGraded] = useState<{ correct: boolean } | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [pending, setPending] = useState<"mc" | 1 | 3 | 4 | 5 | null>(null);
+  const submitting = pending !== null;
 
   useEffect(() => {
     startRef.current = Date.now();
@@ -75,35 +76,47 @@ export function QuizForm({
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  async function postAttempt(body: Record<string, unknown>) {
-    setSubmitting(true);
-    await fetch("/attempt", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    setSubmitting(false);
+  async function postAttempt(
+    body: Record<string, unknown>,
+    tag: "mc" | 1 | 3 | 4 | 5,
+  ) {
+    setPending(tag);
+    try {
+      await fetch("/attempt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } finally {
+      setPending(null);
+    }
   }
 
   async function submitMc() {
     if (!answer) return;
     const correct = answer === correctAnswer;
+    await postAttempt(
+      {
+        questionId,
+        userAnswer: answer,
+        responseTimeMs: Date.now() - startRef.current,
+      },
+      "mc",
+    );
     setGraded({ correct });
-    await postAttempt({
-      questionId,
-      userAnswer: answer,
-      responseTimeMs: Date.now() - startRef.current,
-    });
   }
 
-  async function selfGrade(grade: number) {
+  async function selfGrade(grade: 1 | 3 | 4 | 5) {
+    await postAttempt(
+      {
+        questionId,
+        userAnswer: answer,
+        selfGrade: grade,
+        responseTimeMs: Date.now() - startRef.current,
+      },
+      grade,
+    );
     setGraded({ correct: grade >= 3 });
-    await postAttempt({
-      questionId,
-      userAnswer: answer,
-      selfGrade: grade,
-      responseTimeMs: Date.now() - startRef.current,
-    });
   }
 
   function next() {
@@ -167,8 +180,13 @@ export function QuizForm({
       )}
 
       {!graded && kind === "mc" && (
-        <Button onClick={submitMc} disabled={!answer || submitting}>
-          Odeslat
+        <Button
+          onClick={submitMc}
+          disabled={!answer || submitting}
+          aria-busy={pending === "mc"}
+          className="relative"
+        >
+          <PendingLabel active={pending === "mc"}>Odeslat</PendingLabel>
         </Button>
       )}
 
@@ -200,25 +218,36 @@ export function QuizForm({
                 variant="destructive"
                 onClick={() => selfGrade(1)}
                 disabled={submitting}
+                aria-busy={pending === 1}
+                className="relative"
               >
-                Špatně
+                <PendingLabel active={pending === 1}>Špatně</PendingLabel>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => selfGrade(3)}
                 disabled={submitting}
+                aria-busy={pending === 3}
+                className="relative"
               >
-                Částečně
+                <PendingLabel active={pending === 3}>Částečně</PendingLabel>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => selfGrade(4)}
                 disabled={submitting}
+                aria-busy={pending === 4}
+                className="relative"
               >
-                Dobře
+                <PendingLabel active={pending === 4}>Dobře</PendingLabel>
               </Button>
-              <Button onClick={() => selfGrade(5)} disabled={submitting}>
-                Snadné
+              <Button
+                onClick={() => selfGrade(5)}
+                disabled={submitting}
+                aria-busy={pending === 5}
+                className="relative"
+              >
+                <PendingLabel active={pending === 5}>Snadné</PendingLabel>
               </Button>
             </div>
           </div>
@@ -253,6 +282,28 @@ export function QuizForm({
 
       <ShortcutHints kind={kind} graded={graded !== null} />
     </div>
+  );
+}
+
+function PendingLabel({
+  active,
+  children,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <span className={active ? "invisible" : undefined}>{children}</span>
+      {active && (
+        <span
+          aria-hidden
+          className="absolute inset-0 inline-flex items-center justify-center"
+        >
+          <span className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+        </span>
+      )}
+    </>
   );
 }
 
