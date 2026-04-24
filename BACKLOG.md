@@ -263,9 +263,10 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
 
 ## Post-MVP — Continuous Improvement Round 3
 
-- [ ] **Post-MVP: fix top unresolved UI finding**
+- [x] **Post-MVP: fix top unresolved UI finding**
   - Open `docs/ui-review/findings.md`. Find the first unresolved `- [ ]`. Next expected: Quiz P1 [interaction] "Submit-and-next flow requires two clicks … neither action has a keyboard shortcut." — this has already shipped via `feat: quiz keyboard shortcuts` (commit d5bb309). Verify the shortcuts still work (Enter submits MC, N/Enter advances after grade, Esc returns to dashboard), then retroactively mark the finding `[x]` with a note citing the commit. If verification uncovers regression, fix it first.
   - Commit: `<type>: <finding summary>` (likely `docs: close resolved keyboard-shortcut finding`).
+  - Done: verified no regression — ran Playwright against :3000, pressed `2` (selected option 2), `Enter` (submitted → ✓ Správně + explanation), `N` (advanced to a new question "Použité prostěradlo / ručník…"), `Esc` (navigated to `/` dashboard). Listener in `src/app/quiz/quiz-form.tsx:48-89` still wires all four paths; `ShortcutHints` footer renders contextual `<kbd>` hints. Marked Quiz P1 [interaction] `[x]` in `docs/ui-review/findings.md` with a note citing commit d5bb309 and the re-verification run.
 
 - [ ] **Post-MVP: fix top unresolved UI finding**
   - Next expected: Dashboard P3 [visual] "Next.js dev-tools floating N badge overlaps the topic list." Suppress the dev indicator by setting `devIndicators: false` in `next.config.ts` (Next 15 syntax: `devIndicators: false` at top level disables the entire badge; double-check the current schema since Next has churned it). Confirm the badge is gone on :3000 after launchd picks up the config, then mark the finding `[x]`.
