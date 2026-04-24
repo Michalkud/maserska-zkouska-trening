@@ -1,106 +1,16 @@
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { ReviewView } from "./review-view";
+import { ReviewClient } from "./review-client";
 import { storage } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
 const LIMIT = 20;
 
-function formatAnsweredAt(d: Date): string {
-  const now = new Date();
-  const sameDay =
-    d.getFullYear() === now.getFullYear() &&
-    d.getMonth() === now.getMonth() &&
-    d.getDate() === now.getDate();
-  if (sameDay) {
-    return d.toLocaleTimeString("cs-CZ", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-  return d.toLocaleDateString("cs-CZ", {
-    day: "numeric",
-    month: "numeric",
-  });
-}
-
 export default async function ReviewPage() {
+  if (process.env.NEXT_PUBLIC_STORAGE === "localstorage") {
+    return <ReviewClient />;
+  }
+
   const items = await storage.getRecentMistakes(LIMIT);
-
-  return (
-    <main className="mx-auto w-full max-w-3xl px-6 py-12">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Chybovník
-          </h1>
-          <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
-            {items.length === 0
-              ? "Tady se ti budou skládat otázky, na kterých jsi zaváhal."
-              : "Otázky, na kterých jsi naposledy zakopl. Projdi si správné odpovědi a vysvětlení."}
-          </p>
-        </div>
-        <Link
-          href="/"
-          className="text-sm font-medium underline underline-offset-4 hover:text-foreground"
-        >
-          ← Přehled
-        </Link>
-      </div>
-
-      {items.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-card/50 px-6 py-10 text-center">
-          <p className="text-base font-medium tracking-tight">
-            Zatím bez chyb
-          </p>
-          <p className="mx-auto mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
-            Ještě jsi nic nezkazil. Až něco pustíš vedle, najdeš to přesně tady — se správnou odpovědí i vysvětlením.
-          </p>
-          <Link
-            href="/quiz"
-            className={`${buttonVariants({ size: "lg" })} mt-6`}
-          >
-            Spustit trénink
-          </Link>
-        </div>
-      ) : (
-        <ol className="space-y-4">
-          {items.map((m) => (
-            <li
-              key={m.id}
-              className="rounded-lg border bg-card px-5 py-4"
-            >
-              <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">
-                  {m.topicNameCs}
-                </span>
-                <span className="tabular-nums">
-                  {formatAnsweredAt(m.answeredAt)}
-                </span>
-              </div>
-              <p className="max-w-prose text-base font-medium leading-snug tracking-tight text-balance">
-                {m.stemCs}
-              </p>
-              <div className="mt-3 rounded-md border border-green-700/40 bg-green-50 px-3 py-2">
-                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Správná odpověď
-                </div>
-                <p className="mt-1 max-w-prose text-sm leading-relaxed">
-                  {m.correctAnswer}
-                </p>
-              </div>
-              <div className="mt-2">
-                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Vysvětlení
-                </div>
-                <p className="mt-1 max-w-prose text-sm leading-relaxed">
-                  {m.explanationCs}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
-    </main>
-  );
+  return <ReviewView items={items} />;
 }
