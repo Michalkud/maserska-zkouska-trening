@@ -44,7 +44,7 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
   - PDF pages 7–8 (questions 21–40 of Test B). Same dedup rules (aggressive, most overlaps Test A). Same verify (skip `pnpm build`).
   - Commit: `feat: import anatomy test B questions 21-40`.
 
-- [ ] **Import Anatomy Test B q41–q60 — transcribe + dedup + insert**
+- [x] **Import Anatomy Test B q41–q60 — transcribe + dedup + insert**
   - PDF pages 8–9 (questions 41–60 of Test B). Same dedup rules. Same verify (skip `pnpm build`).
   - Commit: `feat: import anatomy test B questions 41-60`.
 
