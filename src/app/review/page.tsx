@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { prisma } from "@/lib/db";
+import { storage } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -25,28 +25,7 @@ function formatAnsweredAt(d: Date): string {
 }
 
 export default async function ReviewPage() {
-  const misses = await prisma.attempt.findMany({
-    where: { correct: false },
-    orderBy: { answeredAt: "desc" },
-    take: LIMIT * 4,
-    include: {
-      question: {
-        include: { topic: true },
-      },
-    },
-  });
-
-  const latestByQuestion = new Map<
-    string,
-    (typeof misses)[number]
-  >();
-  for (const m of misses) {
-    if (!latestByQuestion.has(m.questionId)) {
-      latestByQuestion.set(m.questionId, m);
-    }
-    if (latestByQuestion.size >= LIMIT) break;
-  }
-  const items = Array.from(latestByQuestion.values());
+  const items = await storage.getRecentMistakes(LIMIT);
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-12">
@@ -86,43 +65,40 @@ export default async function ReviewPage() {
         </div>
       ) : (
         <ol className="space-y-4">
-          {items.map((m) => {
-            const q = m.question;
-            return (
-              <li
-                key={m.id}
-                className="rounded-lg border bg-card px-5 py-4"
-              >
-                <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">
-                    {q.topic.nameCs}
-                  </span>
-                  <span className="tabular-nums">
-                    {formatAnsweredAt(m.answeredAt)}
-                  </span>
+          {items.map((m) => (
+            <li
+              key={m.id}
+              className="rounded-lg border bg-card px-5 py-4"
+            >
+              <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">
+                  {m.topicNameCs}
+                </span>
+                <span className="tabular-nums">
+                  {formatAnsweredAt(m.answeredAt)}
+                </span>
+              </div>
+              <p className="max-w-prose text-base font-medium leading-snug tracking-tight text-balance">
+                {m.stemCs}
+              </p>
+              <div className="mt-3 rounded-md border border-green-700/40 bg-green-50 px-3 py-2">
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Správná odpověď
                 </div>
-                <p className="max-w-prose text-base font-medium leading-snug tracking-tight text-balance">
-                  {q.stemCs}
+                <p className="mt-1 max-w-prose text-sm leading-relaxed">
+                  {m.correctAnswer}
                 </p>
-                <div className="mt-3 rounded-md border border-green-700/40 bg-green-50 px-3 py-2">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Správná odpověď
-                  </div>
-                  <p className="mt-1 max-w-prose text-sm leading-relaxed">
-                    {q.correctAnswer}
-                  </p>
+              </div>
+              <div className="mt-2">
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Vysvětlení
                 </div>
-                <div className="mt-2">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Vysvětlení
-                  </div>
-                  <p className="mt-1 max-w-prose text-sm leading-relaxed">
-                    {q.explanationCs}
-                  </p>
-                </div>
-              </li>
-            );
-          })}
+                <p className="mt-1 max-w-prose text-sm leading-relaxed">
+                  {m.explanationCs}
+                </p>
+              </div>
+            </li>
+          ))}
         </ol>
       )}
     </main>

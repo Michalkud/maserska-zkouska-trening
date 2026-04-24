@@ -97,8 +97,10 @@ export function QuizForm({
     const correct = answer === correctAnswer;
     await postAttempt(
       {
+        kind: "mc",
         questionId,
         userAnswer: answer,
+        correctAnswer,
         responseTimeMs: Date.now() - startRef.current,
       },
       "mc",
@@ -109,8 +111,8 @@ export function QuizForm({
   async function selfGrade(grade: 1 | 3 | 4 | 5) {
     await postAttempt(
       {
+        kind: "open",
         questionId,
-        userAnswer: answer,
         selfGrade: grade,
         responseTimeMs: Date.now() - startRef.current,
       },

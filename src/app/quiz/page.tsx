@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { prisma } from "@/lib/db";
-import { pickNextQuestion, type SelectorQuestion } from "@/lib/selector";
 import {
   SESSION_CAP,
   SESSION_GAP_MS,
   computeSessionStats,
 } from "@/lib/session";
+import { storage } from "@/lib/storage";
 import { QuizForm } from "./quiz-form";
 
 export const dynamic = "force-dynamic";
@@ -22,52 +21,21 @@ export default async function QuizPage({
   const sinceParsed = sinceParam ? new Date(sinceParam) : null;
   const since = sinceParsed && !Number.isNaN(sinceParsed.getTime()) ? sinceParsed : null;
 
+  const allTopics = await storage.listTopics();
   const scopedTopic = topicParam
-    ? await prisma.topic.findUnique({ where: { id: topicParam } })
+    ? allTopics.find((t) => t.id === topicParam) ?? null
     : null;
-  const scopeId = scopedTopic?.id ?? null;
+  const scopeId = scopedTopic?.id;
 
-  const now = new Date();
-  const sessionWindowStart = new Date(now.getTime() - 4 * SESSION_GAP_MS);
-
-  const [questions, recentAttempts] = await Promise.all([
-    prisma.question.findMany({
-      where: scopeId ? { topicId: scopeId } : undefined,
-      include: { topic: true, mastery: true },
-    }),
-    prisma.attempt.findMany({
-      where: { answeredAt: { gte: sessionWindowStart } },
-      orderBy: { answeredAt: "desc" },
-      include: { question: { include: { topic: true } } },
-      take: 120,
-    }),
+  const [picked, counts, recentAttempts] = await Promise.all([
+    storage.getNextDueQuestion(scopeId ? { topicId: scopeId } : undefined),
+    storage.getAggregateCounts(scopeId ? { topicId: scopeId } : undefined),
+    storage.getRecentAttempts({ sinceMs: 4 * SESSION_GAP_MS }),
   ]);
 
-  const session = computeSessionStats(
-    recentAttempts.map((a) => ({
-      answeredAt: a.answeredAt,
-      correct: a.correct,
-      topicNameCs: a.question.topic.nameCs,
-    })),
-    since,
-  );
-
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999);
-  const dueToday = questions.filter(
-    (q) => !q.mastery || q.mastery.dueAt <= endOfToday,
-  ).length;
-
-  const candidates: SelectorQuestion[] = questions.map((q) => ({
-    id: q.id,
-    topicId: q.topicId,
-    topicWeight: q.topic.weight,
-    mastery: q.mastery
-      ? { ease: q.mastery.ease, dueAt: q.mastery.dueAt }
-      : null,
-  }));
-
-  const picked = pickNextQuestion(candidates);
+  const session = computeSessionStats(recentAttempts, since);
+  const dueToday = counts.totalDue;
+  const now = new Date();
 
   const atCap = session.count >= SESSION_CAP;
   const exhausted = !picked;
@@ -78,10 +46,16 @@ export default async function QuizPage({
     continueParams.set("since", now.toISOString());
     const continueHref = `/quiz?${continueParams.toString()}`;
 
-    const nextDueAt = questions
-      .map((q) => q.mastery?.dueAt)
-      .filter((d): d is Date => !!d && d.getTime() > now.getTime())
-      .sort((a, b) => a.getTime() - b.getTime())[0];
+    let nextDueAt: Date | undefined;
+    if (exhausted) {
+      const scopedQuestions = await storage.listQuestions(
+        scopeId ? { topicId: scopeId } : undefined,
+      );
+      nextDueAt = scopedQuestions
+        .map((q) => q.mastery?.dueAt)
+        .filter((d): d is Date => !!d && d.getTime() > now.getTime())
+        .sort((a, b) => a.getTime() - b.getTime())[0];
+    }
 
     return (
       <main className="mx-auto max-w-xl px-6 py-16">
@@ -188,16 +162,11 @@ export default async function QuizPage({
     );
   }
 
-  const full = questions.find((q) => q.id === picked.id)!;
-  const choices: string[] | null = full.choices
-    ? (JSON.parse(full.choices) as string[])
-    : null;
-
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
       <div className="mb-8 flex items-center justify-between gap-4 text-sm text-muted-foreground">
         <span className="flex min-w-0 items-center gap-2 font-medium">
-          <span className="truncate">{full.topic.nameCs}</span>
+          <span className="truncate">{picked.topic.nameCs}</span>
           {scopedTopic && (
             <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
               okruh
@@ -217,12 +186,12 @@ export default async function QuizPage({
         </Link>
       </div>
       <QuizForm
-        questionId={full.id}
-        kind={full.kind as "mc" | "open"}
-        stemCs={full.stemCs}
-        choices={choices}
-        correctAnswer={full.correctAnswer}
-        explanationCs={full.explanationCs}
+        questionId={picked.id}
+        kind={picked.kind}
+        stemCs={picked.stemCs}
+        choices={picked.choices}
+        correctAnswer={picked.correctAnswer}
+        explanationCs={picked.explanationCs}
       />
     </main>
   );

@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { MasterySparkline } from "@/components/mastery-sparkline";
-import { prisma } from "@/lib/db";
-import { HISTORY_DAYS, masteryHistoryByTopic } from "@/lib/mastery-history";
-import { calculateStreak } from "@/lib/streak";
+import { storage, HISTORY_DAYS } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
-
-function normalizeEase(ease: number): number {
-  return Math.max(0, Math.min(1, (ease - 1.3) / (3.0 - 1.3)));
-}
 
 function dayLabel(n: number): string {
   if (n === 1) return "den";
@@ -18,54 +12,20 @@ function dayLabel(n: number): string {
 }
 
 export default async function DashboardPage() {
-  const [topics, attempts, history] = await Promise.all([
-    prisma.topic.findMany({
-      include: {
-        questions: { include: { mastery: true } },
-      },
-    }),
-    prisma.attempt.findMany({
-      orderBy: { answeredAt: "desc" },
-      select: { answeredAt: true },
-    }),
-    masteryHistoryByTopic(),
+  const [topics, streak, counts] = await Promise.all([
+    storage.getMasteryByTopic({ historyDays: HISTORY_DAYS }),
+    storage.getStreakDays(),
+    storage.getAggregateCounts(),
   ]);
 
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999);
+  const topicRows = [...topics].sort((a, b) => {
+    if (b.due !== a.due) return b.due - a.due;
+    if (a.masteryPct !== b.masteryPct) return a.masteryPct - b.masteryPct;
+    return a.nameCs.localeCompare(b.nameCs, "cs");
+  });
 
-  const topicRows = topics
-    .map((t) => {
-      const total = t.questions.length;
-      const seen = t.questions.filter((q) => q.mastery).length;
-      const masterySum = t.questions.reduce(
-        (acc, q) => acc + (q.mastery ? normalizeEase(q.mastery.ease) : 0),
-        0,
-      );
-      const masteryPct = total > 0 ? (masterySum / total) * 100 : 0;
-      const due = t.questions.filter(
-        (q) => !q.mastery || q.mastery.dueAt <= endOfToday,
-      ).length;
-      return {
-        id: t.id,
-        nameCs: t.nameCs,
-        total,
-        seen,
-        masteryPct,
-        due,
-        history: history.get(t.id) ?? null,
-      };
-    })
-    .sort((a, b) => {
-      if (b.due !== a.due) return b.due - a.due;
-      if (a.masteryPct !== b.masteryPct) return a.masteryPct - b.masteryPct;
-      return a.nameCs.localeCompare(b.nameCs, "cs");
-    });
-
-  const totalDue = topicRows.reduce((s, t) => s + t.due, 0);
-  const totalQuestions = topicRows.reduce((s, t) => s + t.total, 0);
-
-  const streak = calculateStreak(attempts.map((a) => a.answeredAt));
+  const totalDue = counts.totalDue;
+  const totalQuestions = counts.totalQuestions;
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-12">
@@ -202,13 +162,7 @@ export default async function DashboardPage() {
                       />
                     </div>
                     <MasterySparkline
-                      values={
-                        t.history ??
-                        (Array.from({ length: HISTORY_DAYS }, () => null) as (
-                          | number
-                          | null
-                        )[])
-                      }
+                      values={t.history}
                       ariaLabel={`Průměrná známka ${t.nameCs} za posledních ${HISTORY_DAYS} dní`}
                     />
                   </div>
