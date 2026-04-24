@@ -3,6 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { gradeFromCorrect } from "@/lib/sm2";
+import { localStorageStorage } from "@/lib/storage/localstorage";
+
+const USE_LOCAL_STORAGE = process.env.NEXT_PUBLIC_STORAGE === "localstorage";
 
 type Props = {
   questionId: string;
@@ -11,6 +15,7 @@ type Props = {
   choices: string[] | null;
   correctAnswer: string;
   explanationCs: string;
+  onNext?: () => void;
 };
 
 export function QuizForm({
@@ -20,6 +25,7 @@ export function QuizForm({
   choices,
   correctAnswer,
   explanationCs,
+  onNext,
 }: Props) {
   const router = useRouter();
   const startRef = useRef<number>(Date.now());
@@ -76,53 +82,72 @@ export function QuizForm({
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  async function postAttempt(
-    body: Record<string, unknown>,
-    tag: "mc" | 1 | 3 | 4 | 5,
-  ) {
-    setPending(tag);
-    try {
-      await fetch("/attempt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    } finally {
-      setPending(null);
-    }
-  }
-
   async function submitMc() {
     if (!answer) return;
     const correct = answer === correctAnswer;
-    await postAttempt(
-      {
-        kind: "mc",
-        questionId,
-        userAnswer: answer,
-        correctAnswer,
-        responseTimeMs: Date.now() - startRef.current,
-      },
-      "mc",
-    );
+    const responseTimeMs = Date.now() - startRef.current;
+    setPending("mc");
+    try {
+      if (USE_LOCAL_STORAGE) {
+        const grade = gradeFromCorrect(correct, responseTimeMs);
+        await localStorageStorage.recordAttempt({
+          questionId,
+          grade,
+          responseTimeMs,
+        });
+      } else {
+        await fetch("/attempt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kind: "mc",
+            questionId,
+            userAnswer: answer,
+            correctAnswer,
+            responseTimeMs,
+          }),
+        });
+      }
+    } finally {
+      setPending(null);
+    }
     setGraded({ correct });
   }
 
   async function selfGrade(grade: 1 | 3 | 4 | 5) {
-    await postAttempt(
-      {
-        kind: "open",
-        questionId,
-        selfGrade: grade,
-        responseTimeMs: Date.now() - startRef.current,
-      },
-      grade,
-    );
+    const responseTimeMs = Date.now() - startRef.current;
+    setPending(grade);
+    try {
+      if (USE_LOCAL_STORAGE) {
+        await localStorageStorage.recordAttempt({
+          questionId,
+          grade,
+          responseTimeMs,
+        });
+      } else {
+        await fetch("/attempt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kind: "open",
+            questionId,
+            selfGrade: grade,
+            responseTimeMs,
+          }),
+        });
+      }
+    } finally {
+      setPending(null);
+    }
     setGraded({ correct: grade >= 3 });
   }
 
   function next() {
-    router.refresh();
+    if (onNext) {
+      onNext();
+    } else {
+      router.refresh();
+    }
     setAnswer("");
     setRevealed(false);
     setGraded(null);
