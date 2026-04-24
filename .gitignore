@@ -28,7 +28,7 @@ build/
 !.env.example
 
 # DB
-data/
+/data/
 *.db
 *.db-journal
 *.sqlite
