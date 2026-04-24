@@ -7,7 +7,10 @@ const nextConfig: NextConfig = isStatic
       output: "export",
       trailingSlash: true,
       images: { unoptimized: true },
+      devIndicators: false,
     }
-  : {};
+  : {
+      devIndicators: false,
+    };
 
 export default nextConfig;

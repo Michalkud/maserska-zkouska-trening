@@ -25,7 +25,7 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 - [x] **P2 [copy]** "Zvládnutí podle okruhu" header is all-caps small caps, same style as the three stat labels; it's the section H2 and deserves heavier treatment. Visual hierarchy collapses. Screenshot: `01-dashboard.png`. → Fixed: H2 upgraded from `text-sm font-semibold` to `text-lg font-semibold tracking-tight` with `mb-4` (4pt grid). Drops the stat-label twin treatment, establishes a clear heading rung between the 3xl page H1 and body copy. Screenshots: `docs/ui-review/h2-hierarchy-2026-04-23/`.
 
-- [ ] **P3 [visual]** Next.js dev-tools floating "N" badge overlaps the topic list at mid-viewport. Dev-only — suppressible by setting `devIndicators: false` in `next.config.js` for the launchd dev server or ignoring since not prod. Screenshot: `01-dashboard.png`, `07-mobile-dashboard.png`.
+- [x] **P3 [visual]** Next.js dev-tools floating "N" badge overlaps the topic list at mid-viewport. Dev-only — suppressible by setting `devIndicators: false` in `next.config.js` for the launchd dev server or ignoring since not prod. Screenshot: `01-dashboard.png`, `07-mobile-dashboard.png`. → Fixed: `next.config.ts` sets `devIndicators: false` in both the static and default branches. Schema confirmed in Next 16.2.4 (`node_modules/next/dist/esm/server/config-schema.js` — `z.union([z.object({...}), z.literal(false)])`). After launchd restart the `#devtools-indicator` element inside `<nextjs-portal>` shadow DOM still exists but renders as 0×0 — no visible overlap on the topic list. Full-page screenshot: `docs/ui-review/dev-indicator-2026-04-24/dashboard-no-badge.png`.
 
 - [ ] **P3 [info-arch]** No `favicon.ico` customised — still the generic one. Low stakes. Screenshot: browser tab in any page.
 
