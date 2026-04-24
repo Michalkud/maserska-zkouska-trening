@@ -202,7 +202,7 @@ export function QuizForm({
               <label
                 key={c}
                 className={[
-                  "flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-colors",
+                  "flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50",
                   !showResult && isSelected ? "border-primary bg-muted" : "",
                   isCorrect
                     ? "border-green-700 bg-green-50 dark:border-green-500 dark:bg-green-950/40"
@@ -217,7 +217,7 @@ export function QuizForm({
                   value={c}
                   checked={isSelected}
                   onChange={(e) => setAnswer(e.target.value)}
-                  className="mt-1.5"
+                  className="mt-1.5 focus:outline-none"
                 />
                 <span className="text-base leading-relaxed">{c}</span>
               </label>
@@ -403,7 +403,7 @@ function FlagWidget({
       <button
         type="button"
         onClick={onOpen}
-        className="text-xs text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
+        className="rounded-sm text-xs text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
       >
         Nahlásit otázku
       </button>

@@ -167,7 +167,7 @@ export function QuizView({
         </span>
         <Link
           href="/"
-          className="shrink-0 underline underline-offset-4 hover:text-foreground"
+          className="shrink-0 rounded-sm underline underline-offset-4 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           Přehled
         </Link>

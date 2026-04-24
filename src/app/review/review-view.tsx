@@ -40,7 +40,7 @@ export function ReviewView({ items }: Props) {
         </div>
         <Link
           href="/"
-          className="text-sm font-medium underline underline-offset-4 hover:text-foreground"
+          className="rounded-sm text-sm font-medium underline underline-offset-4 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           ← Přehled
         </Link>
