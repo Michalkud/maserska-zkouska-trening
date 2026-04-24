@@ -10,14 +10,14 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
 
 Michal dropped an official practice-exam scan into `docs/sources/cviceni-testy-2026-04-23/`:
 - **`test-anatomie-a-prvni-pomoc.pdf`** (16 pages): two anatomy tests (A, B — 80 questions each) and two first-aid tests (A, B — 30 questions each). Anatomy questions have 3 choices (a/b/c). First-aid questions have 4 choices (a/b/c/d).
-- **`odpovedi-anatomie-strana-1-ze-3.png`** — answer key page 1/3, covers Anatomy Test A (questions 1–80).
-- **`odpovedi-anatomie-strana-2-ze-3.png`** — answer key page 2/3, covers Anatomy Test B (header "2/A"; questions 1–80).
+- **`odpovedi-anatomie-strana-1-ze-3.png`** — answer key page 1/3, header reads "Anatomie B", covers Anatomy Test B (questions 1–80).
+- **`odpovedi-anatomie-strana-2-ze-3.png`** — answer key page 2/3, header reads "Anatomie A", covers Anatomy Test A (questions 1–80). (The initial description mislabelled which page held which test; the headers on the scans are the source of truth.)
 - **Missing**: page 3/3 of the answer keys, which would cover First Aid A + B.
 
 Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read` on the PNGs. For every question added to `src/data/question-bank.ts`, follow the existing row shape (kind, stemCs, choices JSON, correctAnswer, explanationCs, sourceRef). **Never hallucinate an answer.** If unsure, insert as `[BLOCKED: needs michal]` rather than guesswork.
 
-- [ ] **Import Anatomy Test A q1–q20 — transcribe + dedup + insert**
-  - Read the full answer key `docs/sources/cviceni-testy-2026-04-23/odpovedi-anatomie-strana-1-ze-3.png` once (covers all 80 of Test A; cache the answers in your head / scratch). Read PDF `docs/sources/cviceni-testy-2026-04-23/test-anatomie-a-prvni-pomoc.pdf` pages 1–2 (questions 1–20).
+- [x] **Import Anatomy Test A q1–q20 — transcribe + dedup + insert**
+  - Read the full answer key `docs/sources/cviceni-testy-2026-04-23/odpovedi-anatomie-strana-2-ze-3.png` once (header "Anatomie A"; covers all 80 of Test A; cache the answers in your head / scratch). Read PDF `docs/sources/cviceni-testy-2026-04-23/test-anatomie-a-prvni-pomoc.pdf` pages 1–2 (questions 1–20).
   - For each of q1–q20: transcribe stem + 3 choices (a/b/c) verbatim in Czech. Use the answer key for the correct choice. Dedup against `src/data/question-bank.ts` under topic `anatomie` — stem overlap >80% ⇒ duplicate, leave existing row alone (unless official wording is more canonical; if so, note in commit body and replace). New rows: `kind: "mc"`, `sourceRef: "Zkušební test Anatomie A (practice exam scan 2026-04-23, q<N>)"`, one-sentence Czech `explanationCs` grounded in the choice text itself (no external facts you can't cite). Never hallucinate an answer — if the key is illegible for a given question, insert the row with a `TODO:` explanation and flag it in the commit body instead of guessing.
   - Verify: `pnpm db:seed` idempotent (snapshot topics+questions before/after, diff zero outside the new rows), `pnpm exec vitest run` stays green, `pnpm tsc --noEmit` + `pnpm lint` clean. Skip `pnpm build` until q61–q80 iteration.
   - Commit: `feat: import anatomy test A questions 1-20`.
@@ -35,7 +35,7 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
   - Commit: `feat: import anatomy test A questions 61-80`.
 
 - [ ] **Import Anatomy Test B (80 questions) — validate + insert**
-  - PDF pages 6–10 + answer key `odpovedi-anatomie-strana-2-ze-3.png`. Most of Test B overlaps with Test A — be aggressive on dedup. New rows get `sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q<N>)"`.
+  - PDF pages 6–10 + answer key `odpovedi-anatomie-strana-1-ze-3.png` (header "Anatomie B"). Most of Test B overlaps with Test A — be aggressive on dedup. New rows get `sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q<N>)"`.
   - Commit: `feat: import delta anatomy questions from practice test B`.
 
 - [ ] **First Aid Tests A + B (60 questions) — plan schema change first**

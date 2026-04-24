@@ -123,6 +123,7 @@ describe("localStorageStorage", () => {
     expect(recent[0].correct).toBe(true);
     expect(recent[0].topicNameCs).toBe(q.topic.nameCs);
 
+    await new Promise((r) => setTimeout(r, 2));
     const stale = await localStorageStorage.getRecentAttempts({ sinceMs: 0 });
     expect(stale).toHaveLength(0);
   });
