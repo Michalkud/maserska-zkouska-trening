@@ -1375,6 +1375,19 @@ export const questions: SeedQuestion[] = [
     sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q35)",
   },
   {
+    topicSlug: "anatomie",
+    kind: "mc",
+    stemCs: "Který sval zajišťuje primární abdukci (odtažení) paže od trupu do vodorovné polohy (do 90 stupňů)?",
+    choices: [
+      "deltový sval",
+      "trapézový sval",
+      "velký sval prsní",
+    ],
+    correctAnswer: "deltový sval",
+    explanationCs: "Hlavním abduktorem paže v ramenním kloubu v rozsahu do 90° je deltový sval (zejména jeho střední vlákna); nadhřebenový sval iniciuje jen prvních ~15°. Trapézový sval rotuje lopatku (nepřímý přispěvatel), velký prsní sval paži naopak addukuje.",
+    sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q71)",
+  },
+  {
     topicSlug: "kontraindikace-a-kuze",
     kind: "mc",
     stemCs: "Mezi absolutní (celkové) kontraindikace masáže patří:",

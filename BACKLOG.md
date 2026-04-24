@@ -48,7 +48,7 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
   - PDF pages 8–9 (questions 41–60 of Test B). Same dedup rules. Same verify (skip `pnpm build`).
   - Commit: `feat: import anatomy test B questions 41-60`.
 
-- [ ] **Import Anatomy Test B q61–q80 — transcribe + dedup + insert + final verify**
+- [x] **Import Anatomy Test B q61–q80 — transcribe + dedup + insert + final verify**
   - PDF pages 9–10 (questions 61–80 of Test B). Same dedup rules. Final verify adds `pnpm build` + `pnpm build:static` (confirm the new count shows up in both server and static dashboards). Folds in the Pages-deploy check — after `git push`, wait for the workflow and confirm `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new `N k opakování v databázi` total.
   - Commit: `feat: import anatomy test B questions 61-80`.
 
