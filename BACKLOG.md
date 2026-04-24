@@ -34,9 +34,23 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
   - PDF pages 4–5 (questions 61–80). Same dedup rules. Final verify adds `pnpm build` + `pnpm build:static` (confirm the new count shows up in both server and static dashboards). Folds in the Pages-deploy check — after `git push`, wait for the workflow and confirm `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new `N k opakování v databázi` total.
   - Commit: `feat: import anatomy test A questions 61-80`.
 
-- [ ] **Import Anatomy Test B (80 questions) — validate + insert**
-  - PDF pages 6–10 + answer key `odpovedi-anatomie-strana-1-ze-3.png` (header "Anatomie B"). Most of Test B overlaps with Test A — be aggressive on dedup. New rows get `sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q<N>)"`.
-  - Commit: `feat: import delta anatomy questions from practice test B`.
+- [ ] **Import Anatomy Test B q1–q20 — transcribe + dedup + insert**
+  - Read the full answer key `docs/sources/cviceni-testy-2026-04-23/odpovedi-anatomie-strana-1-ze-3.png` once (header "Anatomie B"; covers all 80 of Test B; cache the answers in your head / scratch). Read PDF `docs/sources/cviceni-testy-2026-04-23/test-anatomie-a-prvni-pomoc.pdf` pages 6–7 (questions 1–20 of Test B).
+  - For each of q1–q20: transcribe stem + 3 choices (a/b/c) verbatim in Czech. Use the answer key for the correct choice. **Aggressive dedup** against `src/data/question-bank.ts` under topic `anatomie` — most of Test B overlaps Test A; stem overlap >80% ⇒ duplicate, leave existing row alone (unless official wording is more canonical; if so, note in commit body and replace). New rows: `kind: "mc"`, `sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q<N>)"`, one-sentence Czech `explanationCs` grounded in the choice text itself. Never hallucinate an answer — if the key is illegible for a given question, insert the row with a `TODO:` explanation and flag it in the commit body instead of guessing.
+  - Verify: `pnpm db:seed` idempotent (snapshot topics+questions before/after, diff zero outside the new rows), `pnpm exec vitest run` stays green, `pnpm tsc --noEmit` + `pnpm lint` clean. Skip `pnpm build` until q61–q80 iteration.
+  - Commit: `feat: import anatomy test B questions 1-20`.
+
+- [ ] **Import Anatomy Test B q21–q40 — transcribe + dedup + insert**
+  - PDF pages 7–8 (questions 21–40 of Test B). Same dedup rules (aggressive, most overlaps Test A). Same verify (skip `pnpm build`).
+  - Commit: `feat: import anatomy test B questions 21-40`.
+
+- [ ] **Import Anatomy Test B q41–q60 — transcribe + dedup + insert**
+  - PDF pages 8–9 (questions 41–60 of Test B). Same dedup rules. Same verify (skip `pnpm build`).
+  - Commit: `feat: import anatomy test B questions 41-60`.
+
+- [ ] **Import Anatomy Test B q61–q80 — transcribe + dedup + insert + final verify**
+  - PDF pages 9–10 (questions 61–80 of Test B). Same dedup rules. Final verify adds `pnpm build` + `pnpm build:static` (confirm the new count shows up in both server and static dashboards). Folds in the Pages-deploy check — after `git push`, wait for the workflow and confirm `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new `N k opakování v databázi` total.
+  - Commit: `feat: import anatomy test B questions 61-80`.
 
 - [ ] **First Aid Tests A + B (60 questions) — plan schema change first**
   - PDF pages 11–16. First-aid uses 4-choice questions (a/b/c/d) — a format the bank currently doesn't support.
