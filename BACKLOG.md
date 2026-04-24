@@ -26,7 +26,7 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
   - PDF pages 2–3 (questions 21–40). Same dedup rules. Same verify (skip `pnpm build`).
   - Commit: `feat: import anatomy test A questions 21-40`.
 
-- [ ] **Import Anatomy Test A q41–q60 — transcribe + dedup + insert**
+- [x] **Import Anatomy Test A q41–q60 — transcribe + dedup + insert**
   - PDF pages 3–4 (questions 41–60). Same dedup rules. Same verify (skip `pnpm build`).
   - Commit: `feat: import anatomy test A questions 41-60`.
 
