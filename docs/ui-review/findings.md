@@ -71,6 +71,10 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 - [x] **P3 [visual]** Quiz page padding on mobile looks slightly tight — text touches viewport edges at ~16 px margin. Bump to 20–24 px. Screenshot: `08-mobile-quiz.png`. → Verified already resolved: `main` on `/quiz` uses `px-6` (24 px, within 20–24 px target). Computed `paddingLeft/Right = 24px` at viewport 390; H1 stem and MC choice cards both have comfortable breathing room (originally sweep-time screenshot likely predated the `px-6` change). Screenshot: `mobile-2026-04-23/before-quiz.png`, `after-quiz.png`.
 
+## Static / localStorage build (`pnpm build:static` → :3001)
+
+- [x] **[static] verification sweep 2026-04-24** — cleared localStorage, navigated dashboard → scoped quiz (`?topic=hygiena-a-dezinfekce`) → answered one MC correct (grade 3) and one MC wrong (grade 1) → reloaded → visited `/review` → hard-reloaded `/review`. All three routes served as static HTML with client hydration. localStorage persisted across reloads (`mz.attempts` and `mz.mastery` survived). Dashboard after sweep: `K opakování dnes 156`, `Série 1 den`, Hygiena row `2/15 · 9% · 13 k opakování` — matches expected SM-2 state. Review page lists the wrong-answered question with correct answer + explanation. No console errors (only benign woff2 preload warnings from Next, same in Prisma mode). Screenshots: `docs/ui-review/static-2026-04-24/01-dashboard-fresh.png`, `02-quiz-unscoped-open.png`, `03-quiz-correct-feedback.png`, `04-quiz-wrong-feedback.png`, `05-dashboard-after-2-attempts.png`, `06-review-with-mistake.png`, `07-review-after-reload.png`.
+
 ---
 
 **Total findings: 26** (4 × P1, 13 × P2, 9 × P3)
