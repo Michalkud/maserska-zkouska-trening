@@ -58,7 +58,7 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
   - Iteration 1: design-only. Decide how to extend `Question` type + seed to carry 4 choices + nullable `correctAnswer`. Write it up in `docs/decisions/003-4-choice-questions.md`. Split the rest into concrete follow-ups. Insert a `[BLOCKED: needs michal]` item at top asking for the missing answer-key page.
   - Commit: `docs: ADR 003 — 4-choice + unanswered-question support`.
 
-- [ ] **Push → Pages auto-deploys updated bundle**
+- [x] **Push → Pages auto-deploys updated bundle**
   - The `pages.yml` workflow rebuilds static on every main push. After the two anatomy imports land, verify `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new question count on the dashboard.
   - No separate commit — fold into the last import.
 
