@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   SESSION_CAP,
   SESSION_GAP_MS,
@@ -7,18 +8,23 @@ import { storage } from "@/lib/storage";
 import { QuizClient } from "./quiz-client";
 import { QuizView } from "./quiz-view";
 
-export const dynamic = "force-dynamic";
-
 export default async function QuizPage({
   searchParams,
 }: {
-  searchParams: Promise<{ topic?: string | string[]; since?: string | string[] }>;
+  searchParams?: Promise<{
+    topic?: string | string[];
+    since?: string | string[];
+  }>;
 }) {
   if (process.env.NEXT_PUBLIC_STORAGE === "localstorage") {
-    return <QuizClient />;
+    return (
+      <Suspense fallback={null}>
+        <QuizClient />
+      </Suspense>
+    );
   }
 
-  const params = await searchParams;
+  const params = searchParams ? await searchParams : {};
   const topicParam = Array.isArray(params.topic) ? params.topic[0] : params.topic;
   const sinceParam = Array.isArray(params.since) ? params.since[0] : params.since;
   const sinceParsed = sinceParam ? new Date(sinceParam) : null;

@@ -18,6 +18,8 @@ scripts/dev-server.log.*
 # Node
 node_modules/
 .next/
+out/
+.build-static-stash/
 dist/
 build/
 *.tsbuildinfo
