@@ -256,6 +256,63 @@ Everything below this line runs *after* the MVP app is functional. Items here ei
   - Commit: `feat: daily goal indicator`.
   - Done: `AggregateCounts` extended with `todayAttempts: number`. Prisma impl adds a `prisma.attempt.count({ where: { answeredAt: { gte: startOfTodayLocal() } } })` to the parallel `Promise.all` in `getAggregateCounts`; localStorage impl filters `readAttempts()` by `new Date(a.at) >= startOfTodayLocal()`. `startOfTodayLocal()` mirrors the existing `endOfTodayLocal()` pattern (setHours(0,0,0,0)) so boundaries are consistent with the `totalDue` calc. `DAILY_GOAL = 20` is a local const in `dashboard-view.tsx` (no settings UI per spec). Render: a new `<section aria-label="Denní cíl">` sits between the stats grid and the topics list. Two branches — in-progress shows "dnes:", bold `{todayAttempts}` + muted `/ 20`, plus a 160 px × 6 px `bg-muted` rail with a `bg-primary/70` fill at `Math.min(100, pct)%`; met flips to a filled pill (`bg-primary text-primary-foreground rounded-full px-3 py-1 text-xs font-semibold shadow-sm`) with `✓ Cíl dne splněn · {count}` (plain ✓ char to match the existing quiz feedback-pill style — no new icon dep). Verified via DOM inspection on live :3000 (`todayAttempts=8`): section markup = `dnes: <b>8</b> / 20` plus progress bar at `width:40%`. tsc --noEmit clean, pnpm lint clean, 60/60 vitest pass. Storage tests only assert `totalQuestions`/`totalDue` so no regression from the new field. Playwright screenshot tool was timing out on the font-load wait, so no saved screenshot — verification is DOM-level.
 
+- [x] **Post-MVP: regenerate improvement batch**
+  - Done: generated round 3 (13 items). Drivers: 5 × unresolved UI findings on top of findings.md (keyboard-shortcut retroactive close, dev-tools badge, favicon, `html[lang="cs"]`, disabled-Odeslat contrast), 3 × design polish (dark mode, focus-visible audit, /review card treatment), 2 × logic refinement (explanation/sourceRef coverage audit, daily-goal DST/midnight tests), 2 × new features from the original goals (export/import localStorage JSON for static-mode portability, "Xx chybně" repeat-miss counter on /review). No UI sweep refresh — last sweep 2026-04-23, only 1 day old. Round 3 meta-item appended.
+
+---
+
+## Post-MVP — Continuous Improvement Round 3
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - Open `docs/ui-review/findings.md`. Find the first unresolved `- [ ]`. Next expected: Quiz P1 [interaction] "Submit-and-next flow requires two clicks … neither action has a keyboard shortcut." — this has already shipped via `feat: quiz keyboard shortcuts` (commit d5bb309). Verify the shortcuts still work (Enter submits MC, N/Enter advances after grade, Esc returns to dashboard), then retroactively mark the finding `[x]` with a note citing the commit. If verification uncovers regression, fix it first.
+  - Commit: `<type>: <finding summary>` (likely `docs: close resolved keyboard-shortcut finding`).
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - Next expected: Dashboard P3 [visual] "Next.js dev-tools floating N badge overlaps the topic list." Suppress the dev indicator by setting `devIndicators: false` in `next.config.ts` (Next 15 syntax: `devIndicators: false` at top level disables the entire badge; double-check the current schema since Next has churned it). Confirm the badge is gone on :3000 after launchd picks up the config, then mark the finding `[x]`.
+  - Commit: `<type>: <finding summary>`.
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - Next expected: Dashboard P3 [info-arch] "No `favicon.ico` customised — still the generic one." Replace `src/app/favicon.ico` (or add `src/app/icon.svg`) with a simple monogram matching the app — e.g. "MZ" in the primary token on a square background, or a stylised mortar / massage-stone glyph. SVG preferred so it scales; if emitting ICO, keep it 32×32. Verify the browser tab on `/`, `/quiz`, `/review` shows the new icon. Mark the finding `[x]`.
+  - Commit: `<type>: <finding summary>`.
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - Next expected: Cross-cutting P2 [a11y] "No `html[lang="cs"]` check — verify `app/layout.tsx` sets `lang='cs'`." Confirmed bug: `src/app/layout.tsx:31` currently has `lang="en"`. Flip it to `"cs"` so Czech pronunciation works in screen readers. Verify via DOM inspection on `/` and mark the finding `[x]`.
+  - Commit: `<type>: <finding summary>`.
+
+- [ ] **Post-MVP: fix top unresolved UI finding**
+  - Next expected: Quiz P2 [visual] "Disabled `Odeslat` button is gray-on-white with very low contrast; reads as disabled and absent." Audit the shadcn `Button` disabled tokens for the default variant. Either bump the disabled background to `bg-muted` with `text-muted-foreground` at a legible weight, or keep the primary fill at a reduced opacity (e.g. `disabled:opacity-60`) so the shape stays identifiable. Target WCAG 1.4.11 non-text contrast 3:1 against the page. Verify both MC pre-selection and open-answer pre-input states. Mark the finding `[x]`.
+  - Commit: `<type>: <finding summary>`.
+
+- [ ] **Post-MVP: design polish — dark mode support**
+  - Tailwind and shadcn tokens already ship light/dark pairs (`:root` and `.dark` blocks in `globals.css`). Add `dark` class plumbing: (1) respect `prefers-color-scheme` by default via `next-themes` or a small inline script in `layout.tsx`; (2) a subtle toggle in the dashboard header (sun/moon `<button>`, no new icon dep — use text characters or an inline SVG); (3) audit the few places that hard-code colour (quiz green-700 correct choice, feedback pill bg-green-700 / bg-destructive) to make sure they still clear contrast in dark mode — add `dark:` variants where needed.
+  - Screenshots of dashboard + quiz in both modes in `docs/ui-review/dark-mode-YYYY-MM-DD/`.
+  - Commit: `feat: dark mode`.
+
+- [ ] **Post-MVP: design polish — focus-visible audit**
+  - Walk every interactive surface with keyboard only (Tab / Shift+Tab through `/`, `/quiz`, `/review`). Every focused element must have a visible `focus-visible:ring-2 focus-visible:ring-ring` treatment. Current offenders likely: topic row Link, quiz choice labels, mistake review cards, flag-widget textarea and buttons, dashboard CTA buttons. Normalise to the shadcn `focus-visible` pattern. Screenshot three representative focus states in `docs/ui-review/focus-YYYY-MM-DD/`.
+  - Commit: `style: focus-visible audit`.
+
+- [ ] **Post-MVP: design polish — /review card treatment**
+  - Current mistake review list renders 20 entries in a flat stack; with real data the page becomes a long wall of similarly-styled cards. Tighten: compact topic chip + timestamp in a one-liner header, collapse the correct-answer card into a subtler left-border accent (no full green-tinted card per row), and reduce vertical spacing so ~10 entries fit on a 1080p viewport. Keep the explanation readable (`max-w-prose`). Don't add filtering — volume control lives with the 20-cap.
+  - Screenshots before/after in `docs/ui-review/review-density-YYYY-MM-DD/`.
+  - Commit: `style: /review layout density pass`.
+
+- [ ] **Post-MVP: logic refinement — explanation + sourceRef coverage audit**
+  - Add a vitest `src/data/question-bank.test.ts` that asserts every entry in `questions` has (a) `explanationCs.trim().length >= 20`, (b) `sourceRef` set to a non-empty string, (c) for MC questions: `correctAnswer` appears in `choicesCs`. Any failures list the offending questionId + topic so the loop can patch them later. If failures appear, log them to `docs/curriculum-gaps.md` in the same iteration but do not hand-edit question-bank content — a future iteration will address them after review.
+  - Commit: `test: question-bank content coverage`.
+
+- [ ] **Post-MVP: logic refinement — daily-goal + streak DST/midnight tests**
+  - `startOfTodayLocal()` / `endOfTodayLocal()` use `setHours(0,0,0,0)` — safe across DST for local-time bucketing, but we have no tests asserting that. Add `src/lib/day-boundaries.test.ts` (extracting the two helpers into `src/lib/day-boundaries.ts` if they're still inline) with cases for: (a) attempts just before local midnight roll over cleanly to the next day's count; (b) Europe/Prague spring-forward 2026-03-29 02:00 → 03:00 — an attempt at 01:59 belongs to 2026-03-29 bucket; (c) fall-back 2026-10-25 (02:59 CEST → 02:00 CET) — attempts during the repeated hour still bucket correctly. Inject a `now` parameter rather than mocking system time. Verify `calculateStreak` already correct under the same dates (tests exist, just extend coverage).
+  - Commit: `test: day-boundary + DST coverage`.
+
+- [ ] **Post-MVP: new feature — export/import localStorage progress**
+  - Static-mode users have no sync. Add a "Záloha pokroku" section at the bottom of `/`: (1) "Stáhnout zálohu" button triggers a JSON download of `{version: 1, attempts: mz.attempts, mastery: mz.mastery, flags: mz.flags, exportedAt: ISO}`; (2) hidden `<input type="file" accept="application/json">` + "Obnovit ze zálohy" button — on change, parse, validate version, merge into localStorage (dedupe attempts by `{questionId, at}`; overwrite mastery; append flags). Show a neutral "Obnoveno" / error toast. Hide entirely in Prisma mode (no value there — server DB is the source of truth). Keep scope to localStorage; don't touch Prisma branch.
+  - Commit: `feat: localStorage backup export/import`.
+
+- [ ] **Post-MVP: new feature — mistake count per question on /review**
+  - The current `/review` dedupes by questionId keeping only the latest miss. Surface repetition: render a small "`N× chybně`" chip on each row when `N >= 2`, computed from all attempts for that questionId where `correct=false`. Both storage impls already have `getRecentMistakes` / `getRecentAttempts` — extend the server-side fetch (and the localStorage client variant) to pass a `missCount` field through to `ReviewView`. No schema change. If `N === 1`, hide the chip to keep the page calm.
+  - Commit: `feat: repeat-miss counter on /review`.
+
 - [ ] **Post-MVP: regenerate improvement batch**
   - Run `/rebuild-backlog` to generate the next batch of 10–15 post-MVP items based on the current state of the app, `docs/ui-review/findings.md`, and open questions logged in SecondBrain.
   - Commit: `chore: regenerate post-MVP batch`.
