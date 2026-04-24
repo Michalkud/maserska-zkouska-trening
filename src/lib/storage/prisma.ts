@@ -29,6 +29,12 @@ function endOfTodayLocal(): Date {
   return d;
 }
 
+function startOfTodayLocal(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 type QuestionRow = Awaited<
   ReturnType<typeof prisma.question.findMany<{
     include: { topic: true; mastery: true };
@@ -239,17 +245,19 @@ export const prismaStorage: Storage = {
   async getAggregateCounts(opts): Promise<AggregateCounts> {
     const where = opts?.topicId ? { topicId: opts.topicId } : undefined;
     const endOfToday = endOfTodayLocal();
-    const [totalQuestions, questions] = await Promise.all([
+    const startOfToday = startOfTodayLocal();
+    const [totalQuestions, questions, todayAttempts] = await Promise.all([
       prisma.question.count({ where }),
       prisma.question.findMany({
         where,
         select: { mastery: { select: { dueAt: true } } },
       }),
+      prisma.attempt.count({ where: { answeredAt: { gte: startOfToday } } }),
     ]);
     const totalDue = questions.filter(
       (q) => !q.mastery || q.mastery.dueAt <= endOfToday,
     ).length;
-    return { totalQuestions, totalDue };
+    return { totalQuestions, totalDue, todayAttempts };
   },
 
   async getRecentAttempts(opts): Promise<RecentAttemptWithTopic[]> {

@@ -68,6 +68,7 @@ export interface AttemptOutcome {
 export interface AggregateCounts {
   totalQuestions: number;
   totalDue: number;
+  todayAttempts: number;
 }
 
 export interface FlagInput {

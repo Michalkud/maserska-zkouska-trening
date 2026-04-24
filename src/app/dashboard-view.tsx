@@ -4,6 +4,8 @@ import { MasterySparkline } from "@/components/mastery-sparkline";
 import { HISTORY_DAYS } from "@/lib/storage/types";
 import type { AggregateCounts, TopicSummary } from "@/lib/storage/types";
 
+const DAILY_GOAL = 20;
+
 function dayLabel(n: number): string {
   if (n === 1) return "den";
   if (n >= 2 && n <= 4) return "dny";
@@ -25,6 +27,9 @@ export function DashboardView({ topics, streak, counts }: Props) {
 
   const totalDue = counts.totalDue;
   const totalQuestions = counts.totalQuestions;
+  const todayAttempts = counts.todayAttempts;
+  const goalMet = todayAttempts >= DAILY_GOAL;
+  const goalPct = Math.min(100, (todayAttempts / DAILY_GOAL) * 100);
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-12">
@@ -127,6 +132,38 @@ export function DashboardView({ topics, streak, counts }: Props) {
             {totalQuestions}
           </div>
         </div>
+      </section>
+
+      <section
+        className="mb-6 flex flex-wrap items-center gap-3 text-sm"
+        aria-label="Denní cíl"
+      >
+        {goalMet ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-sm">
+            <span aria-hidden>✓</span>
+            Cíl dne splněn
+            <span className="tabular-nums font-normal opacity-80">
+              · {todayAttempts}
+            </span>
+          </span>
+        ) : (
+          <>
+            <span className="text-muted-foreground">dnes:</span>
+            <span className="tabular-nums">
+              <span className="font-semibold">{todayAttempts}</span>
+              <span className="text-muted-foreground"> / {DAILY_GOAL}</span>
+            </span>
+            <div
+              className="h-1.5 w-40 overflow-hidden rounded-full bg-muted"
+              aria-hidden
+            >
+              <div
+                className="h-full bg-primary/70 transition-[width] duration-500"
+                style={{ width: `${goalPct}%` }}
+              />
+            </div>
+          </>
+        )}
       </section>
 
       <section>

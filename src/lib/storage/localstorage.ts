@@ -77,6 +77,12 @@ function endOfTodayLocal(now: Date = new Date()): Date {
   return d;
 }
 
+function startOfTodayLocal(now: Date = new Date()): Date {
+  const d = new Date(now);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 function normalizeEase(ease: number): number {
   return Math.max(0, Math.min(1, (ease - 1.3) / (3.0 - 1.3)));
 }
@@ -267,13 +273,17 @@ export const localStorageStorage: Storage = {
   async getAggregateCounts(opts): Promise<AggregateCounts> {
     const mastery = readMastery();
     const endOfToday = endOfTodayLocal();
+    const startOfToday = startOfTodayLocal();
     const qs = staticQuestions.filter((q) => !opts?.topicId || q.topicId === opts.topicId);
     const totalQuestions = qs.length;
     const totalDue = qs.filter((q) => {
       const rec = mastery[q.id];
       return !rec || new Date(rec.dueAt) <= endOfToday;
     }).length;
-    return { totalQuestions, totalDue };
+    const todayAttempts = readAttempts().filter(
+      (a) => new Date(a.at) >= startOfToday,
+    ).length;
+    return { totalQuestions, totalDue, todayAttempts };
   },
 
   async getRecentAttempts(opts): Promise<RecentAttemptWithTopic[]> {
