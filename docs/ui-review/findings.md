@@ -27,7 +27,7 @@ Screenshot references live in `docs/ui-review/2026-04-23/`.
 
 - [x] **P3 [visual]** Next.js dev-tools floating "N" badge overlaps the topic list at mid-viewport. Dev-only — suppressible by setting `devIndicators: false` in `next.config.js` for the launchd dev server or ignoring since not prod. Screenshot: `01-dashboard.png`, `07-mobile-dashboard.png`. → Fixed: `next.config.ts` sets `devIndicators: false` in both the static and default branches. Schema confirmed in Next 16.2.4 (`node_modules/next/dist/esm/server/config-schema.js` — `z.union([z.object({...}), z.literal(false)])`). After launchd restart the `#devtools-indicator` element inside `<nextjs-portal>` shadow DOM still exists but renders as 0×0 — no visible overlap on the topic list. Full-page screenshot: `docs/ui-review/dev-indicator-2026-04-24/dashboard-no-badge.png`.
 
-- [ ] **P3 [info-arch]** No `favicon.ico` customised — still the generic one. Low stakes. Screenshot: browser tab in any page.
+- [x] **P3 [info-arch]** No `favicon.ico` customised — still the generic one. Low stakes. Screenshot: browser tab in any page. → Fixed: replaced default `src/app/favicon.ico` with `src/app/icon.svg` (SVG monogram "MZ" on neutral-900 rounded square, white text). Verified via Playwright on `/`, `/quiz`, `/review` — each page emits `<link rel="icon" type="image/svg+xml" href="/icon.svg?…">`; the asset serves `200 image/svg+xml`. Asset copy: `docs/ui-review/favicon-2026-04-24/icon.svg`.
 
 - [ ] **P3 [a11y]** The three stat cards use headings? They look like `<div>`s — confirm a11y tree has proper heading / role. Should be a list or labelled group. Inspect via snapshot: `- generic [ref=e8]` — no semantic role, just generics. Accessibility tree would benefit from `<dl>` or `role="group" aria-label`.
 
