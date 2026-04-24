@@ -40,7 +40,7 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
   - Verify: `pnpm db:seed` idempotent (snapshot topics+questions before/after, diff zero outside the new rows), `pnpm exec vitest run` stays green, `pnpm tsc --noEmit` + `pnpm lint` clean. Skip `pnpm build` until q61–q80 iteration.
   - Commit: `feat: import anatomy test B questions 1-20`.
 
-- [ ] **Import Anatomy Test B q21–q40 — transcribe + dedup + insert**
+- [x] **Import Anatomy Test B q21–q40 — transcribe + dedup + insert**
   - PDF pages 7–8 (questions 21–40 of Test B). Same dedup rules (aggressive, most overlaps Test A). Same verify (skip `pnpm build`).
   - Commit: `feat: import anatomy test B questions 21-40`.
 
