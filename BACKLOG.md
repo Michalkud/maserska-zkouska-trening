@@ -16,11 +16,23 @@ Michal dropped an official practice-exam scan into `docs/sources/cviceni-testy-2
 
 Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read` on the PNGs. For every question added to `src/data/question-bank.ts`, follow the existing row shape (kind, stemCs, choices JSON, correctAnswer, explanationCs, sourceRef). **Never hallucinate an answer.** If unsure, insert as `[BLOCKED: needs michal]` rather than guesswork.
 
-- [ ] **Import Anatomy Test A (80 questions) — validate + insert**
-  - Read `docs/sources/cviceni-testy-2026-04-23/test-anatomie-a-prvni-pomoc.pdf` pages 1–5 and answer key `odpovedi-anatomie-strana-1-ze-3.png`.
-  - For each of 80 questions: transcribe stem + 3 choices verbatim in Czech. Mark the correct answer from the key. Deduplicate against `src/data/question-bank.ts` — a question is a duplicate if its stem overlaps >80% with an existing row under the `anatomie` topic. For duplicates, leave existing row alone unless the official wording is more canonical. For new rows: `kind: "mc"`, `sourceRef: "Zkušební test Anatomie A (practice exam scan 2026-04-23, q<N>)"`, one-sentence Czech `explanationCs`.
-  - Verify: `pnpm db:seed` idempotent, `pnpm exec vitest run` stays green, `pnpm build` clean.
-  - Commit: `feat: import 80 anatomy questions from practice test A`.
+- [ ] **Import Anatomy Test A q1–q20 — transcribe + dedup + insert**
+  - Read the full answer key `docs/sources/cviceni-testy-2026-04-23/odpovedi-anatomie-strana-1-ze-3.png` once (covers all 80 of Test A; cache the answers in your head / scratch). Read PDF `docs/sources/cviceni-testy-2026-04-23/test-anatomie-a-prvni-pomoc.pdf` pages 1–2 (questions 1–20).
+  - For each of q1–q20: transcribe stem + 3 choices (a/b/c) verbatim in Czech. Use the answer key for the correct choice. Dedup against `src/data/question-bank.ts` under topic `anatomie` — stem overlap >80% ⇒ duplicate, leave existing row alone (unless official wording is more canonical; if so, note in commit body and replace). New rows: `kind: "mc"`, `sourceRef: "Zkušební test Anatomie A (practice exam scan 2026-04-23, q<N>)"`, one-sentence Czech `explanationCs` grounded in the choice text itself (no external facts you can't cite). Never hallucinate an answer — if the key is illegible for a given question, insert the row with a `TODO:` explanation and flag it in the commit body instead of guessing.
+  - Verify: `pnpm db:seed` idempotent (snapshot topics+questions before/after, diff zero outside the new rows), `pnpm exec vitest run` stays green, `pnpm tsc --noEmit` + `pnpm lint` clean. Skip `pnpm build` until q61–q80 iteration.
+  - Commit: `feat: import anatomy test A questions 1-20`.
+
+- [ ] **Import Anatomy Test A q21–q40 — transcribe + dedup + insert**
+  - PDF pages 2–3 (questions 21–40). Same dedup rules. Same verify (skip `pnpm build`).
+  - Commit: `feat: import anatomy test A questions 21-40`.
+
+- [ ] **Import Anatomy Test A q41–q60 — transcribe + dedup + insert**
+  - PDF pages 3–4 (questions 41–60). Same dedup rules. Same verify (skip `pnpm build`).
+  - Commit: `feat: import anatomy test A questions 41-60`.
+
+- [ ] **Import Anatomy Test A q61–q80 — transcribe + dedup + insert + final verify**
+  - PDF pages 4–5 (questions 61–80). Same dedup rules. Final verify adds `pnpm build` + `pnpm build:static` (confirm the new count shows up in both server and static dashboards). Folds in the Pages-deploy check — after `git push`, wait for the workflow and confirm `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new `N k opakování v databázi` total.
+  - Commit: `feat: import anatomy test A questions 61-80`.
 
 - [ ] **Import Anatomy Test B (80 questions) — validate + insert**
   - PDF pages 6–10 + answer key `odpovedi-anatomie-strana-2-ze-3.png`. Most of Test B overlaps with Test A — be aggressive on dedup. New rows get `sourceRef: "Zkušební test Anatomie B (practice exam scan 2026-04-23, q<N>)"`.
