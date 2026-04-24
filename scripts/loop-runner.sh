@@ -62,15 +62,41 @@ echo "=== $STAMP loop-next start ===" >> "$LOG"
 
 # Watchdog: if this iteration runs longer than MAX_ITER_SEC, terminate claude.
 # Covers rate-limit hangs where the HTTPS request never returns.
+# Allow long iterations for UI sweeps that drive Playwright (screenshots + clicks).
 # Stale-lock check above is the fail-safe if the watchdog itself fails.
-MAX_ITER_SEC=$((30 * 60))
+MAX_ITER_SEC=$((60 * 60))
 RUNNER_PID=$$
 (
   sleep "$MAX_ITER_SEC"
   echo "$(date -Iseconds) runner: watchdog firing — iteration exceeded ${MAX_ITER_SEC}s" >> "$LOG"
-  pkill -TERM -P "$RUNNER_PID" claude 2>/dev/null || true
+  # Kill by name anywhere under the runner — not just direct children.
+  # Walks the process tree rooted at RUNNER_PID and TERMs any claude descendant.
+  pgrep -f "^claude -p " | while read -r P; do
+    # Verify P is a descendant of RUNNER_PID by walking parents.
+    CUR="$P"
+    while [ "$CUR" -gt 1 ] 2>/dev/null; do
+      PARENT="$(ps -o ppid= -p "$CUR" 2>/dev/null | tr -d ' ')"
+      if [ "$PARENT" = "$RUNNER_PID" ]; then
+        kill -TERM "$P" 2>/dev/null || true
+        break
+      fi
+      [ -z "$PARENT" ] || [ "$PARENT" = "$CUR" ] && break
+      CUR="$PARENT"
+    done
+  done
   sleep 10
-  pkill -KILL -P "$RUNNER_PID" claude 2>/dev/null || true
+  pgrep -f "^claude -p " | while read -r P; do
+    CUR="$P"
+    while [ "$CUR" -gt 1 ] 2>/dev/null; do
+      PARENT="$(ps -o ppid= -p "$CUR" 2>/dev/null | tr -d ' ')"
+      if [ "$PARENT" = "$RUNNER_PID" ]; then
+        kill -KILL "$P" 2>/dev/null || true
+        break
+      fi
+      [ -z "$PARENT" ] || [ "$PARENT" = "$CUR" ] && break
+      CUR="$PARENT"
+    done
+  done
 ) &
 WATCHDOG_PID=$!
 disown "$WATCHDOG_PID" 2>/dev/null || true
