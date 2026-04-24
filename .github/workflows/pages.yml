@@ -31,6 +31,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile=false
 
+      - name: Generate Prisma client
+        run: pnpm exec prisma generate
+
       - name: Build static export
         env:
           NEXT_PUBLIC_STORAGE: localstorage
