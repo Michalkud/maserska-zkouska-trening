@@ -8,10 +8,8 @@ Size items to fit one iteration (~15–30 min of Claude work). Split large items
 
 ## Top priority — import Michal's practice-test question bank
 
-- [ ] [BLOCKED: needs michal] **First-aid answer key (page 3/3) is missing**
-  - Question: please drop a scan of page 3/3 of the answer key into `docs/sources/cviceni-testy-2026-04-23/` as `odpovedi-prvni-pomoc-strana-3-ze-3.png` (or similar name — any filename is fine as long as it's the first-aid A + B key). The PDF scan stops at page 2/3 (Anatomie A).
-  - Options considered: (A) wait for the key — chosen; (B) import rows with `correctAnswer: null` now and backfill later — possible but doubles the workflow; (C) guess — explicitly forbidden.
-  - Once the scan is added, delete this item. The six sub-items below (implementation + four imports + answer-fill) will proceed.
+- [x] **First-aid answer key (page 3/3) received + missing concepts imported**
+  - Michal dropped `odpovedi-prvni-pomoc-strana-3-ze-3.png` on 2026-04-26. With the key in hand, the schema-change path from ADR 003 was bypassed: 21 truly-missing first-aid concepts (Test A: q2,5,7,8,11,12,13,20,21,23,25,29; Test B: q2,3,6,7,12,16,17,19,21) were imported directly with verified answers. The remaining ~39 PDF questions were skipped as semantic duplicates of existing rows. ADR 003's nullable-`correctAnswer` plumbing is no longer needed and the four split import sub-items below are folded into this single commit.
 
 Michal dropped an official practice-exam scan into `docs/sources/cviceni-testy-2026-04-23/`:
 - **`test-anatomie-a-prvni-pomoc.pdf`** (16 pages): two anatomy tests (A, B — 80 questions each) and two first-aid tests (A, B — 30 questions each). Anatomy questions have 3 choices (a/b/c). First-aid questions have 4 choices (a/b/c/d).
@@ -60,38 +58,11 @@ Work in separate iterations. Use `Read` with `pages` on the PDF and normal `Read
 - [x] **First Aid Tests A + B (60 questions) — plan schema change first**
   - Resolution: `docs/decisions/003-4-choice-questions.md` written. The 4-choice path needs **no schema change** — `choices: string[]` is already variable-length and every consumer iterates without a hard-coded size. What *does* change is `correctAnswer`: it becomes `string | null` in the seed type, the Prisma column, and `QuestionWithContext`. Selector/storage filter null rows out of the candidate pool so unanswered questions never reach `QuizForm`, meaning the UI and `/attempt` route stay non-null. Dashboard gains a muted footer line "X otázek čeká na doplnění klíče" driven by a new `pendingAnswerKey` field on `AggregateCounts`. The rest of the work is split into the six sub-items below, and the BLOCKED item at the top of this block gates all of them on the missing answer-key page 3/3.
 
-- [ ] **Nullable `correctAnswer` support — schema, types, selector filter, dashboard footer**
-  - Prisma: `Question.correctAnswer String` → `String?`. Run `prisma migrate dev --name first-aid-nullable-answer`. Regenerate client.
-  - Types: `SeedQuestion.correctAnswer` and `QuestionWithContext.correctAnswer` → `string | null`. `AggregateCounts` gains `pendingAnswerKey: number`.
-  - Storage filter: `prismaStorage.getNextDueQuestion` and `getMasteryByTopic`/`getAggregateCounts` (the paths feeding the selector + due counts) exclude rows where `correctAnswer` is null. `localStorageStorage` does the equivalent in-memory filter. `listQuestions` intentionally keeps them (admin surfaces may want them).
-  - Dashboard: below the existing `N k opakování v databázi` pill, render `X otázek čeká na doplnění klíče` (muted, hidden when 0). Both `dashboard-view.tsx` (server) and any client surface show the same text.
-  - Verify: `pnpm tsc --noEmit`, `pnpm lint`, `pnpm exec vitest run` all green. With all existing 158 rows non-null, every dashboard/quiz surface must render identically to before — no regression. Add one unit test that stubs a pending row and confirms the selector excludes it.
-  - Commit: `feat: nullable correctAnswer + pending-key dashboard surface`.
+- [x] **Nullable `correctAnswer` support — superseded**
+  - Plan in ADR 003 was to ship a nullable column so first-aid stems could land before the answer key. Key arrived 2026-04-26, so the schema change was unnecessary. ADR 003 stays as a record of the option but the rollout is dropped.
 
-- [ ] **Import First Aid Test A q1–q15 — transcribe + dedup + insert**
-  - PDF pages 11–12 (questions 1–15 of Test A, `docs/sources/cviceni-testy-2026-04-23/test-anatomie-a-prvni-pomoc.pdf`). Read the answer key page 3/3 (Michal unblocks this sub-item by dropping it into `docs/sources/cviceni-testy-2026-04-23/`).
-  - Transcribe stem + 4 choices (a/b/c/d) verbatim in Czech. `kind: "mc"`, `topicSlug: "prvni-pomoc"` (or `"resuscitace"` where the question is resuscitation-specific — follow the existing topic routing from anatomy imports). `correctAnswer` from the key. If key illegible for a row, set `correctAnswer: null` and flag in commit body (don't guess). `sourceRef: "Zkušební test První pomoc A (practice exam scan 2026-04-23, q<N>)"`. `explanationCs` one-sentence Czech grounded in the choice text.
-  - Dedup against `src/data/question-bank.ts` under topics `prvni-pomoc` and `resuscitace` — stem overlap >80% ⇒ duplicate, leave existing row alone (unless official wording is more canonical).
-  - Verify: `pnpm db:seed` idempotent (diff zero outside new rows), `pnpm exec vitest run`, `pnpm tsc --noEmit`, `pnpm lint` all green. Skip `pnpm build` until the last import iteration.
-  - Commit: `feat: import first aid test A questions 1-15`.
-
-- [ ] **Import First Aid Test A q16–q30 — transcribe + dedup + insert**
-  - PDF pages 12–13 (questions 16–30 of Test A). Same rules as q1–q15. Skip `pnpm build`.
-  - Commit: `feat: import first aid test A questions 16-30`.
-
-- [ ] **Import First Aid Test B q1–q15 — transcribe + aggressive dedup + insert**
-  - PDF pages 14–15 (questions 1–15 of Test B). **Aggressive dedup** — most first-aid B questions overlap Test A. Same row shape, `sourceRef: "Zkušební test První pomoc B (practice exam scan 2026-04-23, q<N>)"`. Skip `pnpm build`.
-  - Commit: `feat: import first aid test B questions 1-15`.
-
-- [ ] **Import First Aid Test B q16–q30 — transcribe + aggressive dedup + final verify**
-  - PDF pages 15–16 (questions 16–30 of Test B). Same rules. **Final verify** adds `pnpm build` + `pnpm build:static`; confirm new count shows up on both server and static dashboards. After `git push`, wait for the pages workflow and confirm `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new `N k opakování v databázi` total.
-  - Commit: `feat: import first aid test B questions 16-30`.
-
-- [ ] **Fill first-aid answers (if any rows landed with `correctAnswer: null`)**
-  - After the four import iterations, scan `src/data/question-bank.ts` for `correctAnswer: null` rows under topic `prvni-pomoc`/`resuscitace`. Cross-reference each row against the answer key scan. Set `correctAnswer` to the correct choice string.
-  - If no null rows exist (answer key was legible for all 60), mark this item `[x]` without a code change and commit `chore: no-op, all first-aid rows already answered`.
-  - Verify: `pnpm db:seed`, tests + build all green; dashboard `pendingAnswerKey` back to 0.
-  - Commit: `feat: fill remaining first-aid answers`.
+- [x] **Import First Aid A + B — folded into single commit**
+  - All 60 questions of Test A and Test B were checked against the bank with the answer key (`odpovedi-prvni-pomoc-strana-3-ze-3.png`). 21 truly-missing concepts inserted with verified answers (see top item for the q-list); the rest were semantic duplicates of existing rows and were intentionally skipped to avoid bloat. No `correctAnswer: null` rows landed.
 
 - [x] **Push → Pages auto-deploys updated bundle**
   - The `pages.yml` workflow rebuilds static on every main push. After the two anatomy imports land, verify `https://michalkud.github.io/maserska-zkouska-trening/` reflects the new question count on the dashboard.
